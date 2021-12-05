@@ -1,0 +1,13 @@
+.idea
+*.iml
+out
+target
+logs
+*.txt
+!version.txt
+libs
+*.properties
+*.pdf
+*.json
+dependency-reduced-pom.xml
+!command.json
