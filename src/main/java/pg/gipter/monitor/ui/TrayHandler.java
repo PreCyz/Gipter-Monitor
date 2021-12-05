@@ -72,7 +72,7 @@ public class TrayHandler {
     }
 
     private Image createTrayImage() {
-        Optional<URL> imageURL = ResourceUtils.getImgResource("chicken-tray.gif");
+        Optional<URL> imageURL = ResourceUtils.getImgResource(ImageFile.CHICKEN_TRAY.fileUrl());
         String description = "Tray icon";
         return new ImageIcon(imageURL.get(), description).getImage();
     }
