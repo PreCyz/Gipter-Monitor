@@ -1,11 +1,27 @@
 package pg.gipter.monitor.statistics.services;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import pg.gipter.monitor.statistics.Statistic;
+import pg.gipter.monitor.statistics.dao.StatisticDao;
+import pg.gipter.monitor.statistics.dao.StatisticDaoFactory;
 
-/** Created by Pawel Gawedzki on 29-Aug-2019. */
+import java.time.LocalDateTime;
+import java.util.LinkedList;
+import java.util.List;
+
+/** Created by Pawel Gawedzki on 06-Dec-2021. */
+@Slf4j
 public class StatisticService {
 
-    private static final Logger logger = LoggerFactory.getLogger(StatisticService.class);
+    private final StatisticDao statisticDao;
+
+    public StatisticService() {
+        statisticDao = StatisticDaoFactory.getStatisticDao();
+    }
+
+    public List<Statistic> getFailedTries(LocalDateTime localDateTime) {
+        log.info("Getting statistics");
+        return new LinkedList<>(statisticDao.findAllByLastFailedDateAfter(localDateTime));
+    }
 
 }

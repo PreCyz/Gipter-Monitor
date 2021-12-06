@@ -23,7 +23,7 @@ public abstract class MongoDaoConfig {
 
     private static final String DB_CONFIG = "db.properties";
 
-    private String collectionName;
+    private final String collectionName;
     protected MongoCollection<Document> collection;
 
     private boolean statisticsAvailable;

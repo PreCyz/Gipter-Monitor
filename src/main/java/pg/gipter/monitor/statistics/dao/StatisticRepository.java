@@ -7,9 +7,10 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import pg.gipter.monitor.db.MongoDaoConfig;
+import pg.gipter.monitor.db.StatisticConverter;
 import pg.gipter.monitor.statistics.*;
-import pg.gipter.monitor.utils.StringUtils;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 class StatisticRepository extends MongoDaoConfig implements StatisticDao {
@@ -18,7 +19,6 @@ class StatisticRepository extends MongoDaoConfig implements StatisticDao {
         super(Statistic.COLLECTION_NAME);
     }
 
-    @Override
     public void updateStatistics(Statistic statistic) {
         FindIterable<Statistic> users = collection.find(
                 Filters.eq("username", statistic.getUsername()),
@@ -54,10 +54,10 @@ class StatisticRepository extends MongoDaoConfig implements StatisticDao {
                 }
                 statisticToUpsert.setControlSystemMap(controlSystemMap);
 
-                if (!StringUtils.nullOrEmpty(statistic.getLastSuccessDate())) {
+                if (statistic.getLastSuccessDate() != null) {
                     statisticToUpsert.setLastSuccessDate(statistic.getLastSuccessDate());
                 }
-                if (!StringUtils.nullOrEmpty(statistic.getLastFailedDate())) {
+                if (statistic.getLastFailedDate() != null) {
                     statisticToUpsert.setLastFailedDate(statistic.getLastFailedDate());
                 }
 
@@ -79,5 +79,21 @@ class StatisticRepository extends MongoDaoConfig implements StatisticDao {
         } catch (Exception ex) {
             logger.error("Could not update statistics.", ex);
         }
+    }
+
+    @Override
+    public Collection<Statistic> findAllByLastFailedDateAfter(LocalDateTime localDateTime) {
+        FindIterable<Statistic> failedStatistics = collection.find(
+                Filters.and(
+                        Filters.eq("lastUpdateStatus", UploadStatus.FAIL.name()),
+                        Filters.gte("lastFailedDate", localDateTime.format(StatisticConverter.MONGO_FORMATTER_SSS))
+                ),
+                Statistic.class
+        );
+        final Collection<Statistic> statistics = new LinkedList<>();
+        try (MongoCursor<Statistic> cursor = failedStatistics.cursor()) {
+            cursor.forEachRemaining(statistics::add);
+        }
+        return statistics;
     }
 }

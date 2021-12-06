@@ -13,13 +13,13 @@ import java.util.ResourceBundle;
 public abstract class AbstractController implements Initializable {
 
     protected final UILauncher uiLauncher;
-    protected final Logger logger;
+    protected final Logger log;
     protected URL location;
     protected ResourceBundle resources;
 
     protected AbstractController(UILauncher uiLauncher) {
         this.uiLauncher = uiLauncher;
-        this.logger = LoggerFactory.getLogger(getClass());
+        this.log = LoggerFactory.getLogger(getClass());
     }
 
     @Override
