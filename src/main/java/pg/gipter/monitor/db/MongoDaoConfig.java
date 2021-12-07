@@ -8,8 +8,7 @@ import org.bson.codecs.configuration.CodecRegistries;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import pg.gipter.monitor.statistics.ExceptionDetails;
-import pg.gipter.monitor.statistics.Statistic;
+import pg.gipter.monitor.statistics.collections.*;
 import pg.gipter.monitor.utils.CryptoUtils;
 
 import java.io.*;
@@ -56,9 +55,15 @@ public abstract class MongoDaoConfig {
             Codec<Document> documentCodec = codecRegistry.get(Document.class);
             Codec<Statistic> statisticCodec = new StatisticCodec(codecRegistry);
             Codec<ExceptionDetails> exceptionDetailsCodec = new ExceptionDetailsCodec(codecRegistry);
+            Codec<ActiveSupport> activeSupportCodec = new ActiveSupportCodec(codecRegistry);
             codecRegistry = CodecRegistries.fromRegistries(
                     MongoClient.getDefaultCodecRegistry(),
-                    CodecRegistries.fromCodecs(documentCodec, statisticCodec, exceptionDetailsCodec)
+                    CodecRegistries.fromCodecs(
+                            documentCodec,
+                            statisticCodec,
+                            exceptionDetailsCodec,
+                            activeSupportCodec
+                    )
             );
 
             String host = dbConfig.getProperty("db.host");

@@ -5,13 +5,13 @@ import org.bson.*;
 import org.bson.codecs.*;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
-import pg.gipter.monitor.statistics.Statistic;
+import pg.gipter.monitor.statistics.collections.Statistic;
 
 public class StatisticCodec implements CollectibleCodec<Statistic> {
 
     private final CodecRegistry registry;
     private final Codec<Document> documentCodec;
-    private final StatisticConverter converter;
+    private final MongoConverter<Statistic> converter;
 
     public StatisticCodec() {
         this.registry = MongoClient.getDefaultCodecRegistry();

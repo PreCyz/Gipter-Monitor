@@ -1,4 +1,4 @@
-package pg.gipter.monitor.statistics;
+package pg.gipter.monitor.statistics.collections;
 
 import lombok.*;
 
@@ -10,9 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class ExceptionDetails implements Serializable {
-
     private String errorMsg;
     private String cause;
     private LocalDateTime errorDate;
-
+    private ActiveSupport activeSupport;
 }

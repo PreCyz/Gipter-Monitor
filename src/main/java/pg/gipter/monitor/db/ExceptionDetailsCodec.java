@@ -5,13 +5,13 @@ import org.bson.*;
 import org.bson.codecs.*;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
-import pg.gipter.monitor.statistics.ExceptionDetails;
+import pg.gipter.monitor.statistics.collections.ExceptionDetails;
 
 public class ExceptionDetailsCodec implements CollectibleCodec<ExceptionDetails> {
 
     private final CodecRegistry registry;
     private final Codec<Document> documentCodec;
-    private final ExceptionDetailsConverter converter;
+    private final MongoConverter<ExceptionDetails> converter;
 
     public ExceptionDetailsCodec() {
         this.registry = MongoClient.getDefaultCodecRegistry();

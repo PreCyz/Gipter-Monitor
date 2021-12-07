@@ -1,30 +1,26 @@
-package pg.gipter.monitor.statistics;
+package pg.gipter.monitor.ui.dto;
 
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 import org.bson.types.ObjectId;
+import pg.gipter.monitor.statistics.collections.*;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.Map;
+import java.util.Set;
 
 @Getter
 @Setter
-@NoArgsConstructor
-public class Statistic implements Serializable {
-
-    public static final String COLLECTION_NAME = "statistics";
-
+public class ActiveSupportDetails {
     private ObjectId id;
     private String username;
-    private LocalDateTime lastExecutionDate;
-    private LocalDateTime firstExecutionDate;
     private LocalDateTime lastSuccessDate;
     private LocalDateTime lastFailedDate;
     private String javaVersion;
     private UploadStatus lastUpdateStatus;
     private RunType lastRunType;
     private Map<VersionControlSystem, Set<String>> controlSystemMap;
-    private Set<String> systemUsers;
     private String applicationVersion;
-    private List<ExceptionDetails> exceptions;
+    private ExceptionDetails exception;
+    private ActiveSupport activeSupport;
 }

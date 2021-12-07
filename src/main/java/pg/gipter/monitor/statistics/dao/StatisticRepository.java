@@ -7,11 +7,12 @@ import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
 import org.bson.Document;
 import pg.gipter.monitor.db.MongoDaoConfig;
-import pg.gipter.monitor.db.StatisticConverter;
-import pg.gipter.monitor.statistics.*;
+import pg.gipter.monitor.statistics.collections.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
+
+import static pg.gipter.monitor.utils.DateTimeUtils.MONGO_FORMATTER;
 
 class StatisticRepository extends MongoDaoConfig implements StatisticDao {
 
@@ -86,7 +87,7 @@ class StatisticRepository extends MongoDaoConfig implements StatisticDao {
         FindIterable<Statistic> failedStatistics = collection.find(
                 Filters.and(
                         Filters.eq("lastUpdateStatus", UploadStatus.FAIL.name()),
-                        Filters.gte("lastFailedDate", localDateTime.format(StatisticConverter.MONGO_FORMATTER_SSS))
+                        Filters.gte("lastFailedDate", localDateTime.format(MONGO_FORMATTER))
                 ),
                 Statistic.class
         );

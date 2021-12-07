@@ -2,7 +2,7 @@ package pg.gipter.monitor.ui;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
-import pg.gipter.monitor.statistics.Statistic;
+import pg.gipter.monitor.statistics.collections.Statistic;
 import pg.gipter.monitor.statistics.services.StatisticService;
 
 import java.net.URL;

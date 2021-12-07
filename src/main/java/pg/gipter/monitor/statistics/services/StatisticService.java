@@ -1,7 +1,7 @@
 package pg.gipter.monitor.statistics.services;
 
 import lombok.extern.slf4j.Slf4j;
-import pg.gipter.monitor.statistics.Statistic;
+import pg.gipter.monitor.statistics.collections.Statistic;
 import pg.gipter.monitor.statistics.dao.StatisticDao;
 import pg.gipter.monitor.statistics.dao.StatisticDaoFactory;
 

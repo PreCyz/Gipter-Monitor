@@ -1,7 +1,7 @@
 package pg.gipter.monitor.statistics.dao;
 
 
-import pg.gipter.monitor.statistics.Statistic;
+import pg.gipter.monitor.statistics.collections.Statistic;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
