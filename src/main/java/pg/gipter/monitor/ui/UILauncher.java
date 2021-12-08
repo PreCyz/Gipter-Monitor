@@ -4,7 +4,8 @@ import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.stage.*;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pg.gipter.monitor.launchers.Launcher;
@@ -140,7 +141,7 @@ public class UILauncher implements Launcher {
     }
 
     private void initTray() {
-        if (isTrayActivated()) {
+        if (false && isTrayActivated()) {
             initTrayHandler();
         } else {
             setMainOnCloseRequest(AbstractController.regularOnCloseEventHandler());

@@ -1,13 +1,13 @@
 package pg.gipter.monitor.statistics.services;
 
 import lombok.extern.slf4j.Slf4j;
-import pg.gipter.monitor.statistics.collections.Statistic;
 import pg.gipter.monitor.statistics.dao.StatisticDao;
 import pg.gipter.monitor.statistics.dao.StatisticDaoFactory;
+import pg.gipter.monitor.ui.dto.ActiveSupportDetails;
 
 import java.time.LocalDateTime;
-import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /** Created by Pawel Gawedzki on 06-Dec-2021. */
 @Slf4j
@@ -19,9 +19,13 @@ public class StatisticService {
         statisticDao = StatisticDaoFactory.getStatisticDao();
     }
 
-    public List<Statistic> getFailedTries(LocalDateTime localDateTime) {
+    public List<ActiveSupportDetails> getFailedTries(final LocalDateTime localDateTime) {
         log.info("Getting statistics");
-        return new LinkedList<>(statisticDao.findAllByLastFailedDateAfter(localDateTime));
+        return statisticDao.findAllByLastFailedDateAfter(localDateTime).stream()
+                .map(ActiveSupportDetails::valueFrom)
+                .flatMap(List::stream)
+                .filter(asd -> asd.getErrorDate().isAfter(localDateTime))
+                .collect(Collectors.toList());
     }
 
 }

@@ -1,13 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            prefHeight="400.0" prefWidth="600.0">
-
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+<AnchorPane prefHeight="647.0" prefWidth="1345.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TableView fx:id="tableView" layoutX="14.0" layoutY="144.0" prefHeight="496.0" prefWidth="1316.0">
+        <columns>
+          <TableColumn prefWidth="65.0" text="User" />
+            <TableColumn prefWidth="43.0" text="Gipter" />
+            <TableColumn prefWidth="50.0" text="JVM" />
+            <TableColumn prefWidth="35.0" text="VCS" />
+            <TableColumn prefWidth="112.0" text="RunType" />
+            <TableColumn prefWidth="103.0" text="SuccessDate" />
+            <TableColumn prefWidth="103.0" text="FailDate" />
+            <TableColumn prefWidth="103.0" text="ErrorDate" />
+            <TableColumn prefWidth="690.0" text="Cause" />
+        </columns>
+      </TableView>
+      <Button fx:id="getStatisticsButton" layoutX="1238.0" layoutY="55.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="GET" />
+      <DatePicker fx:id="fromDatePicker" layoutX="1041.0" layoutY="55.0" promptText="Date from" />
+      <Label fx:id="totalLabel" layoutX="14.0" layoutY="14.0" prefHeight="120.0" prefWidth="997.0" textFill="#0616fc">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+   </children>
 </AnchorPane>
