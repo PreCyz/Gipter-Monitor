@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pg.gipter.monitor.launchers.Launcher;
 import pg.gipter.monitor.services.StartupService;
+import pg.gipter.monitor.services.VersionService;
 import pg.gipter.monitor.utils.BundleUtils;
 import pg.gipter.monitor.utils.StringUtils;
 
@@ -89,7 +90,7 @@ public class UILauncher implements Launcher {
         }
         try {
             stage.setTitle(BundleUtils.getMsg(
-                    window.windowTitleBundle(), "tbd"
+                    window.windowTitleBundle(), new VersionService().getVersion()
             ));
             stage.setResizable(window.resizable());
             Scene scene = new Scene(window.root());
