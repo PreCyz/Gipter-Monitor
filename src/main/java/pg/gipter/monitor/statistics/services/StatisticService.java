@@ -3,7 +3,7 @@ package pg.gipter.monitor.statistics.services;
 import lombok.extern.slf4j.Slf4j;
 import pg.gipter.monitor.statistics.dao.StatisticDao;
 import pg.gipter.monitor.statistics.dao.StatisticDaoFactory;
-import pg.gipter.monitor.ui.dto.ActiveSupportDetails;
+import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;

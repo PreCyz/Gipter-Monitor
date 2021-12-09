@@ -5,7 +5,7 @@ import java.util.*;
 public enum ImageFile {
 
     CHICKEN_FACE_PNG("png/chicken-face.png"),
-    CHICKEN_TRAY("chicken-tray.gif")
+    MINION_TRAY("png/minion.png")
     ;
 
     private final String fileName;

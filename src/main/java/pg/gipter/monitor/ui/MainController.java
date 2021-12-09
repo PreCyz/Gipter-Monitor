@@ -12,7 +12,7 @@ import javafx.util.StringConverter;
 import pg.gipter.monitor.statistics.collections.RunType;
 import pg.gipter.monitor.statistics.collections.UploadStatus;
 import pg.gipter.monitor.statistics.services.StatisticService;
-import pg.gipter.monitor.ui.dto.ActiveSupportDetails;
+import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
 import java.net.URL;
 import java.time.*;

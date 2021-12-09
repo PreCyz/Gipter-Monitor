@@ -1,4 +1,4 @@
-package pg.gipter.monitor.ui.dto;
+package pg.gipter.monitor.ui.fxproperties;
 
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;

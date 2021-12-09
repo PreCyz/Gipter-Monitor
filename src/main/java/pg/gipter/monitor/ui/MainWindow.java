@@ -14,7 +14,7 @@ public class MainWindow extends AbstractWindow {
 
     @Override
     protected ImageFile windowImgFileName() {
-        return ImageFile.CHICKEN_FACE_PNG;
+        return ImageFile.MINION_TRAY;
     }
 
     @Override
