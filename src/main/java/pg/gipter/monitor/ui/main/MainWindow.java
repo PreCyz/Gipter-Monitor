@@ -1,4 +1,6 @@
-package pg.gipter.monitor.ui;
+package pg.gipter.monitor.ui.main;
+
+import pg.gipter.monitor.ui.*;
 
 /**Created by Gawa 2019-03-02*/
 public class MainWindow extends AbstractWindow {

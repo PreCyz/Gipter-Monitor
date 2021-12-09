@@ -1,27 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.text.Font?>
-<AnchorPane prefHeight="647.0" prefWidth="1345.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+<AnchorPane prefHeight="740.0" prefWidth="1322.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TableView fx:id="tableView" layoutX="14.0" layoutY="144.0" prefHeight="496.0" prefWidth="1316.0">
-        <columns>
-          <TableColumn prefWidth="65.0" text="User" />
-            <TableColumn prefWidth="43.0" text="Gipter" />
-            <TableColumn prefWidth="50.0" text="JVM" />
-            <TableColumn prefWidth="35.0" text="VCS" />
-            <TableColumn prefWidth="112.0" text="RunType" />
-            <TableColumn prefWidth="103.0" text="SuccessDate" />
-            <TableColumn prefWidth="103.0" text="FailDate" />
-            <TableColumn prefWidth="103.0" text="ErrorDate" />
-            <TableColumn prefWidth="690.0" text="Cause" />
-        </columns>
-      </TableView>
-      <Button fx:id="getStatisticsButton" layoutX="1238.0" layoutY="55.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="GET" />
-      <DatePicker fx:id="fromDatePicker" layoutX="1041.0" layoutY="55.0" promptText="Date from" />
-      <Label fx:id="totalLabel" layoutX="14.0" layoutY="14.0" prefHeight="120.0" prefWidth="997.0" textFill="#0616fc">
+      <Button fx:id="getStatisticsButton" layoutX="1232.0" layoutY="19.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="GET" textFill="#0004ff">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+      <DatePicker fx:id="fromDatePicker" layoutX="1035.0" layoutY="19.0" promptText="Date from" />
+      <Label fx:id="couldNotBeProducedLabel" layoutX="50.0" layoutY="597.0" prefHeight="35.0" prefWidth="578.0" textFill="#35b20f">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <TabPane layoutY="66.0" prefHeight="535.0" prefWidth="1322.0" tabClosingPolicy="UNAVAILABLE">
+        <tabs>
+          <Tab text="Could not be producced">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="diffTableView" layoutX="3.0" layoutY="2.0" prefHeight="496.0" prefWidth="1316.0">
+                           <columns>
+                              <TableColumn prefWidth="65.0" text="User" />
+                              <TableColumn prefWidth="43.0" text="Gipter" />
+                              <TableColumn prefWidth="50.0" text="JVM" />
+                              <TableColumn prefWidth="35.0" text="VCS" />
+                              <TableColumn prefWidth="112.0" text="RunType" />
+                              <TableColumn prefWidth="103.0" text="SuccessDate" />
+                              <TableColumn prefWidth="103.0" text="FailDate" />
+                              <TableColumn prefWidth="103.0" text="ErrorDate" />
+                              <TableColumn prefWidth="690.0" text="Cause" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+            <Tab text="Unauthorized">
+               <content>
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="unauthorizedTableView" layoutX="3.0" layoutY="2.0" prefHeight="496.0" prefWidth="1316.0">
+                           <columns>
+                              <TableColumn prefWidth="65.0" text="User" />
+                              <TableColumn prefWidth="43.0" text="Gipter" />
+                              <TableColumn prefWidth="50.0" text="JVM" />
+                              <TableColumn prefWidth="35.0" text="VCS" />
+                              <TableColumn prefWidth="112.0" text="RunType" />
+                              <TableColumn prefWidth="103.0" text="SuccessDate" />
+                              <TableColumn prefWidth="103.0" text="FailDate" />
+                              <TableColumn prefWidth="103.0" text="ErrorDate" />
+                              <TableColumn prefWidth="690.0" text="Cause" />
+                           </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+               </content>
+            </Tab>
+          <Tab text="Important !!!">
+            <content>
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <TableView fx:id="importantTableView" layoutX="3.0" layoutY="2.0" prefHeight="496.0" prefWidth="1316.0">
+                          <columns>
+                            <TableColumn prefWidth="65.0" text="User" />
+                              <TableColumn prefWidth="43.0" text="Gipter" />
+                              <TableColumn prefWidth="50.0" text="JVM" />
+                              <TableColumn prefWidth="35.0" text="VCS" />
+                              <TableColumn prefWidth="112.0" text="RunType" />
+                              <TableColumn prefWidth="103.0" text="SuccessDate" />
+                              <TableColumn prefWidth="103.0" text="FailDate" />
+                              <TableColumn prefWidth="103.0" text="ErrorDate" />
+                              <TableColumn prefWidth="690.0" text="Cause" />
+                          </columns>
+                        </TableView>
+                     </children>
+                  </AnchorPane>
+            </content>
+          </Tab>
+        </tabs>
+      </TabPane>
+      <Label fx:id="unauthorizedLabel" layoutX="50.0" layoutY="632.0" prefHeight="35.0" prefWidth="578.0" textFill="#f86f14">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="importantLabel" layoutX="50.0" layoutY="667.0" prefHeight="35.0" prefWidth="578.0" textFill="#d30a0a">
+         <font>
+            <Font name="System Bold" size="16.0" />
+         </font>
+      </Label>
+      <Label fx:id="totalLabel" layoutX="50.0" layoutY="702.0" prefHeight="35.0" prefWidth="578.0" textFill="#0616fc">
          <font>
             <Font name="System Bold" size="16.0" />
          </font>

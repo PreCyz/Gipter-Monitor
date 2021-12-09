@@ -1,5 +1,6 @@
-package pg.gipter.monitor.ui;
+package pg.gipter.monitor.ui.main;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -12,12 +13,17 @@ import javafx.util.StringConverter;
 import pg.gipter.monitor.statistics.collections.RunType;
 import pg.gipter.monitor.statistics.collections.UploadStatus;
 import pg.gipter.monitor.statistics.services.StatisticService;
+import pg.gipter.monitor.ui.AbstractController;
+import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
 import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.function.Predicate;
+
+import static java.util.stream.Collectors.toList;
 
 public class MainController extends AbstractController {
 
@@ -28,9 +34,19 @@ public class MainController extends AbstractController {
     @FXML
     private Button getStatisticsButton;
     @FXML
+    private Label couldNotBeProducedLabel;
+    @FXML
+    private Label unauthorizedLabel;
+    @FXML
+    private Label importantLabel;
+    @FXML
     private Label totalLabel;
     @FXML
-    private TableView<ActiveSupportDetails> tableView;
+    private TableView<ActiveSupportDetails> importantTableView;
+    @FXML
+    private TableView<ActiveSupportDetails> diffTableView;
+    @FXML
+    private TableView<ActiveSupportDetails> unauthorizedTableView;
 
     private StatisticService statisticService;
 
@@ -43,19 +59,15 @@ public class MainController extends AbstractController {
         super.initialize(location, resources);
         statisticService = new StatisticService();
 
-        setColumns();
+        setColumns(diffTableView);
+        setColumns(unauthorizedTableView);
+        setColumns(importantTableView);
         setProperties();
     }
 
-    private void setColumns() {
+    private void setColumns(TableView<ActiveSupportDetails> tableView) {
         int columnIdx = 0;
         TableColumn<ActiveSupportDetails, ?> column;
-        /*TableColumn<ActiveSupportDetails, ?> column = tableView.getColumns().get(columnIdx++);
-        TableColumn<ActiveSupportDetails, String> statisticIdColumn = new TableColumn<>();
-        statisticIdColumn.setText(column.getText());
-        statisticIdColumn.setPrefWidth(column.getPrefWidth());
-        statisticIdColumn.setCellValueFactory(new PropertyValueFactory<>("statisticId"));
-        statisticIdColumn.setEditable(false);*/
 
         column = tableView.getColumns().get(columnIdx++);
         TableColumn<ActiveSupportDetails, String> username = new TableColumn<>();
@@ -113,26 +125,6 @@ public class MainController extends AbstractController {
         lastFailedDateColumn.setCellFactory(TextFieldTableCell.forTableColumn(getLocalDateTimeConverter()));
         lastFailedDateColumn.setEditable(false);
 
-        /*column = tableView.getColumns().get(columnIdx++);
-        TableColumn<ActiveSupportDetails, UploadStatus> lastUpdateStatusColumn = new TableColumn<>();
-        lastUpdateStatusColumn.setText(column.getText());
-        lastUpdateStatusColumn.setPrefWidth(column.getPrefWidth());
-        lastUpdateStatusColumn.setCellValueFactory(new PropertyValueFactory<>("lastUpdateStatus"));
-        lastUpdateStatusColumn.setCellFactory(TextFieldTableCell.forTableColumn(getUploadStatusConverter()));
-        lastUpdateStatusColumn.setEditable(false);*/
-
-
-
-
-        /*column = tableView.getColumns().get(columnIdx++);
-        TableColumn<ActiveSupportDetails, String> errorMsgColumn = new TableColumn<>();
-        errorMsgColumn.setText(column.getText());
-        errorMsgColumn.setPrefWidth(column.getPrefWidth());
-        errorMsgColumn.setCellValueFactory(new PropertyValueFactory<>("errorMsg"));
-        errorMsgColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        errorMsgColumn.setEditable(false);*/
-
-
         column = tableView.getColumns().get(columnIdx++);
         TableColumn<ActiveSupportDetails, LocalDateTime> errorDateColumn = new TableColumn<>();
         errorDateColumn.setText(column.getText());
@@ -141,7 +133,7 @@ public class MainController extends AbstractController {
         errorDateColumn.setCellFactory(TextFieldTableCell.forTableColumn(getLocalDateTimeConverter()));
         errorDateColumn.setEditable(false);
 
-        column = tableView.getColumns().get(columnIdx++);
+        column = tableView.getColumns().get(columnIdx);
         TableColumn<ActiveSupportDetails, String> causeColumn = new TableColumn<>();
         causeColumn.setText(column.getText());
         causeColumn.setPrefWidth(column.getPrefWidth());
@@ -149,42 +141,8 @@ public class MainController extends AbstractController {
         causeColumn.setCellFactory(TextFieldTableCell.forTableColumn());
         causeColumn.setEditable(false);
 
-/*
-        column = tableView.getColumns().get(columnIdx++);
-        TableColumn<ActiveSupportDetails, Boolean> processedColumn = new TableColumn<>();
-        processedColumn.setText(column.getText());
-        processedColumn.setPrefWidth(column.getPrefWidth());
-        processedColumn.setCellValueFactory(new PropertyValueFactory<>("processed"));
-        processedColumn.setCellFactory(TextFieldTableCell.forTableColumn(getBooleanConverter()));
-        processedColumn.setEditable(true);
-
-        column = tableView.getColumns().get(columnIdx++);
-        TableColumn<ActiveSupportDetails, LocalDateTime> processedDateTimeColumn = new TableColumn<>();
-        processedDateTimeColumn.setText(column.getText());
-        processedDateTimeColumn.setPrefWidth(column.getPrefWidth());
-        processedDateTimeColumn.setCellValueFactory(new PropertyValueFactory<>("processedDateTime"));
-        processedDateTimeColumn.setCellFactory(TextFieldTableCell.forTableColumn(getLocalDateTimeConverter()));
-        processedDateTimeColumn.setEditable(false);
-
-        column = tableView.getColumns().get(columnIdx++);
-        TableColumn<ActiveSupportDetails, String> userProcessorColumn = new TableColumn<>();
-        userProcessorColumn.setText(column.getText());
-        userProcessorColumn.setPrefWidth(column.getPrefWidth());
-        userProcessorColumn.setCellValueFactory(new PropertyValueFactory<>("userProcessor"));
-        userProcessorColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        userProcessorColumn.setEditable(true);
-
-        column = tableView.getColumns().get(columnIdx++);
-        TableColumn<ActiveSupportDetails, String> commentColumn = new TableColumn<>();
-        commentColumn.setText(column.getText());
-        commentColumn.setPrefWidth(column.getPrefWidth());
-        commentColumn.setCellValueFactory(new PropertyValueFactory<>("comment"));
-        commentColumn.setCellFactory(TextFieldTableCell.forTableColumn());
-        commentColumn.setEditable(true);*/
-
         tableView.getColumns().clear();
         tableView.getColumns().addAll(
-                /*statisticIdColumn,*/
                 username,
                 applicationVersionColumn,
                 javaVersionColumn,
@@ -192,17 +150,11 @@ public class MainController extends AbstractController {
                 lastRunTypeColumn,
                 lastSuccessDateColumn,
                 lastFailedDateColumn,
-                /*lastUpdateStatusColumn,*/
-                /*errorMsgColumn,*/
                 errorDateColumn,
-                causeColumn/*,
-                processedColumn,
-                processedDateTimeColumn,
-                userProcessorColumn,
-                commentColumn*/
+                causeColumn
         );
 
-        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
     private StringConverter<Boolean> getBooleanConverter() {
@@ -289,24 +241,41 @@ public class MainController extends AbstractController {
 
     private EventHandler<ActionEvent> getStatisticsEventHandler() {
         return event -> {
-            LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
-            List<ActiveSupportDetails> failedTries = statisticService.getFailedTries(from);
-            log.info("Found {} statistics.", failedTries.size());
-            analyze(failedTries);
-            tableView.setItems(FXCollections.observableList(failedTries));
+            getStatisticsButton.setDisable(true);
+            Platform.runLater(() -> {
+                LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
+                List<ActiveSupportDetails> failedTries = statisticService.getFailedTries(from);
+                log.info("Found {} statistics.", failedTries.size());
+                groupByFilters(failedTries);
+                getStatisticsButton.setDisable(false);
+            });
         };
     }
 
-    private void analyze(List<ActiveSupportDetails> result) {
-        long diffCouldNotBeProduced = result.stream().filter(asd -> asd.getCause().startsWith("Diff could not be produced")).count();
-        long forGivenRepositories = result.stream().filter(asd -> asd.getCause().startsWith("For given repositories")).count();
-        long other = result.size() - diffCouldNotBeProduced - forGivenRepositories;
-        String labelText = String.format("Diff could not be produced: %d%nFor given repositories: %d%nOther: %d%nTotal: %d",
-                diffCouldNotBeProduced,
-                forGivenRepositories,
-                other,
-                result.size()
-        );
-        totalLabel.setText(labelText);
+    private void groupByFilters(List<ActiveSupportDetails> result) {
+        List<ActiveSupportDetails> diffCouldNotBeProduced = result.stream()
+                .filter(getFilterPredicate(Filter.DIFF).or(getFilterPredicate(Filter.REPOSITORIES)))
+                .collect(toList());
+        List<ActiveSupportDetails> unauthorized = result.stream()
+                .filter(getFilterPredicate(Filter.UNAUTHORIZED))
+                .collect(toList());
+        List<ActiveSupportDetails> important = result.stream()
+                .filter(getFilterPredicate(Filter.DIFF).negate())
+                .filter(getFilterPredicate(Filter.REPOSITORIES).negate())
+                .filter(getFilterPredicate(Filter.UNAUTHORIZED).negate())
+                .collect(toList());
+
+        diffTableView.setItems(FXCollections.observableList(diffCouldNotBeProduced));
+        unauthorizedTableView.setItems(FXCollections.observableList(unauthorized));
+        importantTableView.setItems(FXCollections.observableList(important));
+
+        couldNotBeProducedLabel.setText("Diff could not be produced: " + diffCouldNotBeProduced.size());
+        unauthorizedLabel.setText("Unauthorized [401]: " + unauthorized.size());
+        importantLabel.setText("Important: " + important.size());
+        totalLabel.setText("Total: " + result.size());
+    }
+
+    private Predicate<ActiveSupportDetails> getFilterPredicate(final Filter filter) {
+        return asd -> asd.getCause().contains(filter.value());
     }
 }
