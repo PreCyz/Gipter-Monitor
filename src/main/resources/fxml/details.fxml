@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.*?>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="602.0" prefWidth="850.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="statisticIdLabel" alignment="CENTER" layoutX="14.0" layoutY="18.0" prefHeight="32.0" prefWidth="267.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="usernameLabel" alignment="CENTER" layoutX="624.0" layoutY="60.0" prefHeight="32.0" prefWidth="212.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="lastSuccessDateLabel" alignment="CENTER" layoutX="14.0" layoutY="102.0" prefHeight="32.0" prefWidth="150.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="lastFailedDateLabel" alignment="CENTER" layoutX="175.0" layoutY="102.0" prefHeight="32.0" prefWidth="150.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="javaVersionLabel" alignment="CENTER" layoutX="14.0" layoutY="60.0" prefHeight="32.0" prefWidth="72.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="lastUpdateStatusLabel" alignment="CENTER" layoutX="178.0" layoutY="60.0" prefHeight="32.0" prefWidth="212.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="lastRunTypeLabel" alignment="CENTER" layoutX="401.0" layoutY="60.0" prefHeight="32.0" prefWidth="212.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="controlSystemMapLabel" alignment="CENTER" layoutX="14.0" layoutY="146.0" prefHeight="87.0" prefWidth="824.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label" wrapText="true">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="applicationVersionLabel" alignment="CENTER" layoutX="96.0" layoutY="60.0" prefHeight="32.0" prefWidth="72.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Separator layoutY="242.0" prefWidth="850.0" />
+      <Label fx:id="errorMsgLabel" alignment="CENTER" layoutX="14.0" layoutY="255.0" prefHeight="87.0" prefWidth="660.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="causeLabel" alignment="CENTER" layoutX="14.0" layoutY="352.0" prefHeight="79.0" prefWidth="824.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="errorDateLabel" alignment="CENTER" layoutX="686.0" layoutY="255.0" prefHeight="32.0" prefWidth="150.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Label fx:id="processDateTimeLabel" alignment="CENTER" layoutX="686.0" layoutY="454.0" prefHeight="32.0" prefWidth="150.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <Separator layoutY="441.0" prefWidth="850.0" />
+      <CheckBox fx:id="processedCheckBox" layoutX="748.0" layoutY="505.0" mnemonicParsing="false" text="Processed">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </CheckBox>
+      <Label fx:id="userProcessorLabel" alignment="CENTER" layoutX="524.0" layoutY="454.0" prefHeight="32.0" prefWidth="150.0" style="-fx-border-style: solid; -fx-background-color: #f5fffa;" text="Label">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+         <padding>
+            <Insets top="10.0" />
+         </padding>
+      </Label>
+      <TextArea fx:id="commentTextArea" layoutX="14.0" layoutY="454.0" prefHeight="128.0" prefWidth="493.0" wrapText="true" />
+      <Button fx:id="saveButton" layoutX="786.0" layoutY="546.0" mnemonicParsing="false" text="Save" textFill="#001eff">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Button>
+      <Button fx:id="cancelButton" layoutX="711.0" layoutY="546.0" mnemonicParsing="false" text="Cancel" textFill="#ff5600">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Button>
+   </children>
+</AnchorPane>

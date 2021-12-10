@@ -1,16 +1,18 @@
 package pg.gipter.monitor.ui;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import javafx.stage.*;
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pg.gipter.monitor.launchers.Launcher;
 import pg.gipter.monitor.services.StartupService;
 import pg.gipter.monitor.services.VersionService;
+import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 import pg.gipter.monitor.utils.BundleUtils;
 import pg.gipter.monitor.utils.StringUtils;
 
@@ -26,12 +28,16 @@ public class UILauncher implements Launcher {
     private static final Logger logger = LoggerFactory.getLogger(UILauncher.class);
 
     private final Stage mainWindow;
+    private Stage detailsWindow;
     private TrayHandler trayHandler;
     private final Executor executor;
+    @Getter
+    private final SimpleObjectProperty<ActiveSupportDetails> currentActiveSupport;
 
     public UILauncher(Stage mainWindow) {
         this.mainWindow = mainWindow;
         this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        currentActiveSupport = new SimpleObjectProperty<>();
     }
 
     public void executeOutsideUIThread(Runnable runnable) {
@@ -157,10 +163,22 @@ public class UILauncher implements Launcher {
         mainWindow.hide();
     }
 
-
-    private void closeWindow(Stage stage) {
-        stage.close();
-        execute();
+    public void bind(SimpleObjectProperty<ActiveSupportDetails> selectedValue) {
+        currentActiveSupport.unbindBidirectional(selectedValue);
+        currentActiveSupport.bindBidirectional(selectedValue);
     }
 
+    public void openDetailsWindow() {
+        Platform.runLater(() -> {
+            detailsWindow = new Stage();
+            detailsWindow.initModality(Modality.APPLICATION_MODAL);
+            buildScene(detailsWindow, WindowFactory.DETAILS.createWindow(this));
+            detailsWindow.setOnCloseRequest(event -> detailsWindow.close());
+            detailsWindow.showAndWait();
+        });
+    }
+
+    public void closeDetailsWindow() {
+        detailsWindow.close();
+    }
 }

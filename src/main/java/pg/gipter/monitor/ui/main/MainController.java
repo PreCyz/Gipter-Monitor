@@ -1,6 +1,7 @@
 package pg.gipter.monitor.ui.main;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -9,6 +10,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.AnchorPane;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 import pg.gipter.monitor.statistics.collections.RunType;
 import pg.gipter.monitor.statistics.collections.UploadStatus;
@@ -50,6 +52,8 @@ public class MainController extends AbstractController {
 
     private StatisticService statisticService;
 
+    private SimpleObjectProperty<ActiveSupportDetails> selectedValue;
+
     public MainController(UILauncher uiLauncher) {
         super(uiLauncher);
     }
@@ -58,6 +62,8 @@ public class MainController extends AbstractController {
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
         statisticService = new StatisticService();
+        selectedValue = new SimpleObjectProperty<>();
+        uiLauncher.bind(selectedValue);
 
         setColumns(diffTableView);
         setColumns(unauthorizedTableView);
@@ -236,7 +242,22 @@ public class MainController extends AbstractController {
     private void setProperties() {
         fromDatePicker.setValue(LocalDate.now().minusMonths(1));
         getStatisticsButton.setOnAction(getStatisticsEventHandler());
+        diffTableView.setRowFactory(getTableViewTableRowCallback());
+        importantTableView.setRowFactory(getTableViewTableRowCallback());
+        unauthorizedTableView.setRowFactory(getTableViewTableRowCallback());
+    }
 
+    private Callback<TableView<ActiveSupportDetails>, TableRow<ActiveSupportDetails>> getTableViewTableRowCallback() {
+        return tv -> {
+            TableRow<ActiveSupportDetails> row = new TableRow<>();
+            row.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2 && !row.isEmpty()) {
+                    selectedValue.set(row.getItem());
+                    uiLauncher.openDetailsWindow();
+                }
+            });
+            return row;
+        };
     }
 
     private EventHandler<ActionEvent> getStatisticsEventHandler() {

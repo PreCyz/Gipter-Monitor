@@ -1,5 +1,7 @@
 package pg.gipter.monitor.ui;
 
+import pg.gipter.monitor.ui.details.DetailsController;
+import pg.gipter.monitor.ui.details.DetailsWindow;
 import pg.gipter.monitor.ui.main.MainController;
 import pg.gipter.monitor.ui.main.MainWindow;
 
@@ -9,6 +11,12 @@ public enum WindowFactory {
         @Override
         public AbstractWindow createWindow(UILauncher uiLauncher) {
             return new MainWindow(new MainController(uiLauncher));
+        }
+    },
+    DETAILS {
+        @Override
+        public AbstractWindow createWindow(UILauncher uiLauncher) {
+            return new DetailsWindow(new DetailsController(uiLauncher));
         }
     };
 
