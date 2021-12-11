@@ -8,10 +8,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pg.gipter.monitor.launchers.Launcher;
 import pg.gipter.monitor.launchers.LauncherFactory;
+import pg.gipter.monitor.services.VersionService;
 import pg.gipter.monitor.utils.StringUtils;
 import pg.gipter.monitor.utils.SystemUtils;
 
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toSet;
@@ -25,7 +27,7 @@ public class Main extends Application {
         Main mObj = new Main(args);
         mObj.setLoggerLevel("INFO");
         logger.info("Java version '{}'.", SystemUtils.javaVersion());
-        logger.info("Version of application '{}'.", "tbd");
+        logger.info("Version of application '{}'.", VersionService.getInstance().getVersion());
         logger.info("Gipter can use '{}' threads.", Runtime.getRuntime().availableProcessors());
         launch(args);
     }

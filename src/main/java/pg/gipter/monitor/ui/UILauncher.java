@@ -96,7 +96,7 @@ public class UILauncher implements Launcher {
         }
         try {
             stage.setTitle(BundleUtils.getMsg(
-                    window.windowTitleBundle(), new VersionService().getVersion()
+                    window.windowTitleBundle(), VersionService.getInstance().getVersion()
             ));
             stage.setResizable(window.resizable());
             Scene scene = new Scene(window.root());

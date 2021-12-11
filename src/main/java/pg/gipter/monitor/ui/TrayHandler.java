@@ -5,6 +5,7 @@ import javafx.event.EventHandler;
 import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import pg.gipter.monitor.services.VersionService;
 import pg.gipter.monitor.utils.BundleUtils;
 import pg.gipter.monitor.utils.ResourceUtils;
 
@@ -40,7 +41,7 @@ public class TrayHandler {
 
         trayIcon = new TrayIcon(
                 createTrayImage(),
-                BundleUtils.getMsg("main.title", "tbd"),
+                BundleUtils.getMsg("main.title", VersionService.getInstance().getVersion()),
                 trayPopupMenu
         );
         trayIcon.addActionListener(showActionListener());
