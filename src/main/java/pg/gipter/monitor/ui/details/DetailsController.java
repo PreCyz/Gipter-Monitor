@@ -95,7 +95,7 @@ public class DetailsController extends AbstractController {
                 if (object == null) {
                     return "";
                 }
-                return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(object);
+                return YYYY_MM_DD_HH_MM.format(object);
             }
 
             @Override
@@ -103,21 +103,7 @@ public class DetailsController extends AbstractController {
                 if (string.isEmpty()) {
                     return null;
                 }
-                return LocalDateTime.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").parse(string));
-            }
-        };
-    }
-
-    private StringConverter<Boolean> getBooleanConverter() {
-        return new StringConverter<>() {
-            @Override
-            public String toString(Boolean object) {
-                return object.toString();
-            }
-
-            @Override
-            public Boolean fromString(String string) {
-                return Boolean.getBoolean(string);
+                return LocalDateTime.from(YYYY_MM_DD_HH_MM.parse(string));
             }
         };
     }
@@ -176,7 +162,7 @@ public class DetailsController extends AbstractController {
 
         processedCheckBox.setDisable(selectedValue.get().isProcessed());
 
-        cancelButton.setOnAction(event -> uiLauncher.closeDetailsWindow());
+        cancelButton.setOnAction(getCancelButtonAction());
         saveButton.setDisable(selectedValue.getValue().isProcessed());
         saveButton.setOnAction(getSaveButtonAction());
     }
@@ -188,13 +174,22 @@ public class DetailsController extends AbstractController {
         return tooltip;
     }
 
+    private EventHandler<ActionEvent> getCancelButtonAction() {
+        return event -> {
+            if (selectedValue.getValue().isProcessed() && processedCheckBox.isDisabled()) {
+                selectedValue.set(null);
+            }
+            uiLauncher.closeDetailsWindow();
+        };
+    }
+
     private EventHandler<ActionEvent> getSaveButtonAction() {
         return event -> {
             if (processedCheckBox.isSelected()) {
                 ActiveSupportDetails activeSupportDetails = selectedValue.getValue();
                 activeSupportDetails.setProcessDateTime(LocalDateTime.now());
                 activeSupportDetails.setUserProcessor(System.getProperty("user.name"));
-                selectedValue.set(activeSupportDetails);
+                selectedValue.setValue(activeSupportDetails);
 
                 ActiveSupportService activeSupportService = new ActiveSupportService();
                 ActiveSupport savedActiveSupport = activeSupportService.save(selectedValue.getValue().getActiveSupport());

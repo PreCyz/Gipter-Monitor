@@ -3,6 +3,7 @@ package pg.gipter.monitor.ui.main;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -14,7 +15,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import pg.gipter.monitor.domain.statistics.collections.RunType;
-import pg.gipter.monitor.domain.statistics.collections.UploadStatus;
 import pg.gipter.monitor.domain.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
@@ -51,6 +51,8 @@ public class MainController extends AbstractController {
     private TableView<ActiveSupportDetails> diffTableView;
     @FXML
     private TableView<ActiveSupportDetails> unauthorizedTableView;
+    @FXML
+    private TabPane mainTabPane;
 
     private StatisticService statisticService;
 
@@ -59,6 +61,8 @@ public class MainController extends AbstractController {
     private SimpleStringProperty unauthorizedStringProperty;
     private SimpleStringProperty importantStringProperty;
     private SimpleStringProperty totalStringProperty;
+
+    private List<ActiveSupportDetails> failedTries;
 
     private enum Summary {
         TOTAL("Total: "),
@@ -95,12 +99,47 @@ public class MainController extends AbstractController {
     private void initValues() {
         statisticService = new StatisticService();
         selectedValue = new SimpleObjectProperty<>();
+        selectedValue.addListener(getSelectedValueChangeListener());
         uiLauncher.bind(selectedValue);
         summaryMap = Arrays.stream(Summary.values()).collect(toMap(summary -> summary, Summary::text));
         diffStringProperty = new SimpleStringProperty(summaryMap.get(Summary.DIFF_COULD_NOT_PRODUCE));
         unauthorizedStringProperty = new SimpleStringProperty(summaryMap.get(Summary.UNAUTHORIZED));
         importantStringProperty = new SimpleStringProperty(summaryMap.get(Summary.IMPORTANT));
         totalStringProperty = new SimpleStringProperty(summaryMap.get(Summary.TOTAL));
+    }
+
+    private ChangeListener<ActiveSupportDetails> getSelectedValueChangeListener() {
+        return (observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                List<ActiveSupportDetails> refreshedItems = failedTries.stream()
+                        .filter(activeSupportDetails -> !activeSupportDetails.isProcessed())
+                        .collect(toList());
+                groupByFilters(refreshedItems);
+            }
+        };
+    }
+
+    private void groupByFilters(List<ActiveSupportDetails> total) {
+        List<ActiveSupportDetails> diffCouldNotBeProduced = total.stream()
+                .filter(getFilterPredicate(Filter.DIFF).or(getFilterPredicate(Filter.REPOSITORIES)))
+                .collect(toList());
+        List<ActiveSupportDetails> unauthorized = total.stream()
+                .filter(getFilterPredicate(Filter.UNAUTHORIZED))
+                .collect(toList());
+        List<ActiveSupportDetails> important = total.stream()
+                .filter(getFilterPredicate(Filter.DIFF).negate())
+                .filter(getFilterPredicate(Filter.REPOSITORIES).negate())
+                .filter(getFilterPredicate(Filter.UNAUTHORIZED).negate())
+                .collect(toList());
+
+        diffTableView.setItems(FXCollections.observableList(diffCouldNotBeProduced));
+        unauthorizedTableView.setItems(FXCollections.observableList(unauthorized));
+        importantTableView.setItems(FXCollections.observableList(important));
+
+        diffStringProperty.set(summaryMap.get(Summary.DIFF_COULD_NOT_PRODUCE) + diffCouldNotBeProduced.size());
+        unauthorizedStringProperty.set(summaryMap.get(Summary.UNAUTHORIZED) + unauthorized.size());
+        importantStringProperty.set(summaryMap.get(Summary.IMPORTANT) + important.size());
+        totalStringProperty.set(summaryMap.get(Summary.TOTAL) + total.size());
     }
 
     private void setColumns(TableView<ActiveSupportDetails> tableView) {
@@ -223,20 +262,6 @@ public class MainController extends AbstractController {
         };
     }
 
-    private StringConverter<UploadStatus> getUploadStatusConverter() {
-        return new StringConverter<>() {
-            @Override
-            public String toString(UploadStatus object) {
-                return object.name();
-            }
-
-            @Override
-            public UploadStatus fromString(String string) {
-                return UploadStatus.valueOf(string);
-            }
-        };
-    }
-
     private StringConverter<LocalDateTime> getLocalDateTimeConverter() {
         return new StringConverter<>() {
             @Override
@@ -274,7 +299,7 @@ public class MainController extends AbstractController {
             TableRow<ActiveSupportDetails> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    selectedValue.set(row.getItem());
+                    selectedValue.setValue(row.getItem());
                     uiLauncher.openDetailsWindow();
                 }
             });
@@ -287,35 +312,12 @@ public class MainController extends AbstractController {
             getStatisticsButton.setDisable(true);
             Platform.runLater(() -> {
                 LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
-                List<ActiveSupportDetails> failedTries = statisticService.getFailedTries(from);
+                failedTries = statisticService.getFailedTries(from);
                 log.info("Found {} statistics.", failedTries.size());
                 groupByFilters(failedTries);
                 getStatisticsButton.setDisable(false);
             });
         };
-    }
-
-    private void groupByFilters(List<ActiveSupportDetails> total) {
-        List<ActiveSupportDetails> diffCouldNotBeProduced = total.stream()
-                .filter(getFilterPredicate(Filter.DIFF).or(getFilterPredicate(Filter.REPOSITORIES)))
-                .collect(toList());
-        List<ActiveSupportDetails> unauthorized = total.stream()
-                .filter(getFilterPredicate(Filter.UNAUTHORIZED))
-                .collect(toList());
-        List<ActiveSupportDetails> important = total.stream()
-                .filter(getFilterPredicate(Filter.DIFF).negate())
-                .filter(getFilterPredicate(Filter.REPOSITORIES).negate())
-                .filter(getFilterPredicate(Filter.UNAUTHORIZED).negate())
-                .collect(toList());
-
-        diffTableView.setItems(FXCollections.observableList(diffCouldNotBeProduced));
-        unauthorizedTableView.setItems(FXCollections.observableList(unauthorized));
-        importantTableView.setItems(FXCollections.observableList(important));
-
-        diffStringProperty.set(summaryMap.get(Summary.DIFF_COULD_NOT_PRODUCE) + diffCouldNotBeProduced.size());
-        unauthorizedStringProperty.set(summaryMap.get(Summary.UNAUTHORIZED) + unauthorized.size());
-        importantStringProperty.set(summaryMap.get(Summary.IMPORTANT) + important.size());
-        totalStringProperty.set(summaryMap.get(Summary.TOTAL) + total.size());
     }
 
     private Predicate<ActiveSupportDetails> getFilterPredicate(final Filter filter) {

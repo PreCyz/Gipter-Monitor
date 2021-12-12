@@ -15,9 +15,9 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <TabPane layoutY="66.0" prefHeight="535.0" prefWidth="1322.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane fx:id="mainTabPane" layoutY="66.0" prefHeight="535.0" prefWidth="1322.0" tabClosingPolicy="UNAVAILABLE">
         <tabs>
-          <Tab text="Could not be producced">
+          <Tab text="%main.tab.couldNotBeProduced">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -38,7 +38,7 @@
                   </AnchorPane>
             </content>
           </Tab>
-            <Tab text="Unauthorized">
+            <Tab text="%main.tab.unauthorized">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -59,7 +59,7 @@
                   </AnchorPane>
                </content>
             </Tab>
-          <Tab text="Important !!!">
+          <Tab text="%main.tab.important">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
@@ -82,7 +82,7 @@
           </Tab>
         </tabs>
       </TabPane>
-      <TitledPane animated="false" collapsible="false" layoutX="3.0" layoutY="610.0" prefHeight="174.0" prefWidth="576.0" text="Summary" textFill="#21a83a">
+      <TitledPane animated="false" collapsible="false" layoutX="3.0" layoutY="610.0" prefHeight="174.0" prefWidth="576.0" text="%main.summary" textFill="#21a83a">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="142.0" prefWidth="555.0">
                <children>

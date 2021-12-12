@@ -63,7 +63,6 @@ class StatisticRepository extends MongoDaoConfig implements StatisticDao {
                 new BasicDBObject().append("$set", Document.parse(new Gson().toJson(map)))
         );
 
-        log.info("Records found: [{}].", updateResult.getMatchedCount());
-        log.info("Records updated: [{}].", updateResult.getModifiedCount());
+        log.info("Records found: [{}], records updated: [{}]", updateResult.getMatchedCount(), updateResult.getModifiedCount());
     }
 }
