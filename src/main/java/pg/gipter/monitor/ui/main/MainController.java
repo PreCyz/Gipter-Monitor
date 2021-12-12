@@ -11,6 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
@@ -140,6 +141,10 @@ public class MainController extends AbstractController {
         unauthorizedStringProperty.set(summaryMap.get(Summary.UNAUTHORIZED) + unauthorized.size());
         importantStringProperty.set(summaryMap.get(Summary.IMPORTANT) + important.size());
         totalStringProperty.set(summaryMap.get(Summary.TOTAL) + total.size());
+    }
+
+    private Predicate<ActiveSupportDetails> getFilterPredicate(final Filter filter) {
+        return asd -> asd.getCause().contains(filter.value());
     }
 
     private void setColumns(TableView<ActiveSupportDetails> tableView) {
@@ -289,9 +294,24 @@ public class MainController extends AbstractController {
         importantTableView.setRowFactory(getTableViewTableRowCallback());
         unauthorizedTableView.setRowFactory(getTableViewTableRowCallback());
         diffLabel.textProperty().bindBidirectional(diffStringProperty);
+        diffLabel.setOnMouseClicked(getLabelOnClickAction(0));
         unauthorizedLabel.textProperty().bindBidirectional(unauthorizedStringProperty);
+        unauthorizedLabel.setOnMouseClicked(getLabelOnClickAction(1));
         importantLabel.textProperty().bindBidirectional(importantStringProperty);
+        importantLabel.setOnMouseClicked(getLabelOnClickAction(2));
         totalLabel.textProperty().bindBidirectional(totalStringProperty);
+    }
+
+    private EventHandler<ActionEvent> getStatisticsEventHandler() {
+        return event -> {
+            getStatisticsButton.setDisable(true);
+            Platform.runLater(() -> {
+                LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
+                failedTries = statisticService.getFailedTries(from);
+                groupByFilters(failedTries);
+                getStatisticsButton.setDisable(false);
+            });
+        };
     }
 
     private Callback<TableView<ActiveSupportDetails>, TableRow<ActiveSupportDetails>> getTableViewTableRowCallback() {
@@ -307,20 +327,11 @@ public class MainController extends AbstractController {
         };
     }
 
-    private EventHandler<ActionEvent> getStatisticsEventHandler() {
+    private EventHandler<MouseEvent> getLabelOnClickAction(final int tabIndex) {
         return event -> {
-            getStatisticsButton.setDisable(true);
-            Platform.runLater(() -> {
-                LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
-                failedTries = statisticService.getFailedTries(from);
-                log.info("Found {} statistics.", failedTries.size());
-                groupByFilters(failedTries);
-                getStatisticsButton.setDisable(false);
-            });
+            if (event.getClickCount() == 1) {
+                mainTabPane.getSelectionModel().select(tabIndex);
+            }
         };
-    }
-
-    private Predicate<ActiveSupportDetails> getFilterPredicate(final Filter filter) {
-        return asd -> asd.getCause().contains(filter.value());
     }
 }

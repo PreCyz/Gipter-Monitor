@@ -193,6 +193,7 @@ public class DetailsController extends AbstractController {
 
                 ActiveSupportService activeSupportService = new ActiveSupportService();
                 ActiveSupport savedActiveSupport = activeSupportService.save(selectedValue.getValue().getActiveSupport());
+                selectedValue.getValue().setProcessingId(savedActiveSupport.getId().toHexString());
 
                 StatisticService service = new StatisticService();
                 service.setProcessed(

@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.*?>
+<?import javafx.scene.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 <AnchorPane prefHeight="795.0" prefWidth="1322.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <DatePicker fx:id="fromDatePicker" layoutX="14.0" layoutY="25.0" promptText="Date from" />
-      <Button fx:id="getStatisticsButton" layoutX="211.0" layoutY="25.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="80.0" text="GET" textFill="#0004ff">
+      <Button fx:id="getStatisticsButton" layoutX="211.0" layoutY="23.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="GET" textFill="#0004ff">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Button>
@@ -101,16 +102,25 @@
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Label>
                         <Label fx:id="unauthorizedLabel" prefHeight="35.0" prefWidth="550.0" textFill="#f86f14" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Label>
                         <Label fx:id="importantLabel" prefHeight="35.0" prefWidth="550.0" textFill="#d30a0a" GridPane.halignment="CENTER" GridPane.rowIndex="2">
                            <font>
                               <Font name="System Bold" size="16.0" />
                            </font>
+                           <cursor>
+                              <Cursor fx:constant="HAND" />
+                           </cursor>
                         </Label>
                         <Label fx:id="totalLabel" prefHeight="35.0" prefWidth="550.0" textFill="#0616fc" GridPane.halignment="CENTER" GridPane.rowIndex="3">
                            <font>

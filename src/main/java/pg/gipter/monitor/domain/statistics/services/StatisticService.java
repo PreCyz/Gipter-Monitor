@@ -8,7 +8,8 @@ import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /** Created by Pawel Gawedzki on 06-Dec-2021. */
 @Slf4j
@@ -26,12 +27,12 @@ public class StatisticService {
                 .map(ActiveSupportDetails::valueFrom)
                 .flatMap(List::stream)
                 .filter(asd -> asd.getErrorDate().isAfter(localDateTime))
-                .collect(Collectors.toList());
+                .filter(asd -> asd.getProcessingId() == null || asd.getProcessingId().isEmpty())
+                .collect(toList());
     }
 
     public void setProcessed(String statisticId, ExceptionDetails exceptionDetails, String processId) {
         log.info("Processing statistic with id [{}].", statisticId);
-
         statisticDao.saveProcessed(statisticId, exceptionDetails, processId);
     }
 }

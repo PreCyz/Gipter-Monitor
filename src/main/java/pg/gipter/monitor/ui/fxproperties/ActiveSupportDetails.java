@@ -28,6 +28,7 @@ public class ActiveSupportDetails {
     private final BooleanProperty processed;
     private final ObjectProperty<LocalDateTime> processDateTime;
     private final StringProperty userProcessor;
+    private final StringProperty processingId;
     private final StringProperty comment;
 
     public ActiveSupportDetails() {
@@ -49,6 +50,7 @@ public class ActiveSupportDetails {
         this.processDateTime = new SimpleObjectProperty<>();
         this.userProcessor = new SimpleStringProperty();
         this.comment = new SimpleStringProperty();
+        this.processingId = new SimpleStringProperty();
     }
 
     public static List<ActiveSupportDetails> valueFrom(Statistic statistic) {
@@ -71,6 +73,7 @@ public class ActiveSupportDetails {
                 asd.setCause(ed.getCause());
                 asd.setErrorDate(ed.getErrorDate());
                 asd.setProcessed(asd.isProcessed());
+                asd.setProcessingId(ed.getProcessId());
                 asd.setProcessDateTime(asd.getProcessDateTime());
                 asd.setUserProcessor(asd.getUserProcessor());
                 asd.setComment(asd.getComment());
@@ -294,6 +297,18 @@ public class ActiveSupportDetails {
 
     public void setLastExecutionDate(LocalDateTime lastExecutionDate) {
         this.lastExecutionDate.set(lastExecutionDate);
+    }
+
+    public String getProcessingId() {
+        return processingId.get();
+    }
+
+    public StringProperty processingIdProperty() {
+        return processingId;
+    }
+
+    public void setProcessingId(String processingId) {
+        this.processingId.set(processingId);
     }
 
     public ExceptionDetails getExceptionDetails() {
