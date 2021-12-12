@@ -1,4 +1,4 @@
-package pg.gipter.monitor.statistics.collections;
+package pg.gipter.monitor.domain.statistics.collections;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

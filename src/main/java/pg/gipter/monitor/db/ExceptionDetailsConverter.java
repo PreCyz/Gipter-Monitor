@@ -1,9 +1,7 @@
 package pg.gipter.monitor.db;
 
 import org.bson.Document;
-import pg.gipter.monitor.statistics.collections.ExceptionDetails;
-
-import java.util.Optional;
+import pg.gipter.monitor.domain.statistics.collections.ExceptionDetails;
 
 import static pg.gipter.monitor.utils.DateTimeUtils.MONGO_FORMATTER;
 import static pg.gipter.monitor.utils.DateTimeUtils.getLocalDateTime;
@@ -17,7 +15,7 @@ class ExceptionDetailsConverter implements MongoConverter<ExceptionDetails> {
         document.put("cause", exceptionDetails.getCause());
         document.put("errorDate", MONGO_FORMATTER.format(exceptionDetails.getErrorDate()));
         document.put("errorMsg", exceptionDetails.getErrorMsg());
-        document.put("activeSupport", exceptionDetails.getActiveSupport());
+        document.put("processId", exceptionDetails.getProcessId());
         return document;
     }
 
@@ -28,10 +26,11 @@ class ExceptionDetailsConverter implements MongoConverter<ExceptionDetails> {
         exceptionDetails.setCause(document.getString("cause"));
         exceptionDetails.setErrorDate(getLocalDateTime(document, "errorDate"));
         exceptionDetails.setErrorMsg(document.getString("errorMsg"));
-        Optional.ofNullable(document.get("activeSupport", Document.class))
+        exceptionDetails.setProcessId(document.getString("processId"));
+        /*Optional.ofNullable(document.get("activeSupport", Document.class))
                 .ifPresent(d -> exceptionDetails.setActiveSupport(
                         new ActiveSupportConverter().convert(document.get("activeSupport", Document.class))
-                ));
+                ));*/
         return exceptionDetails;
     }
 }

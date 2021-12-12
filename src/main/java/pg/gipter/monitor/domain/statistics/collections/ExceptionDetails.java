@@ -1,4 +1,4 @@
-package pg.gipter.monitor.statistics.collections;
+package pg.gipter.monitor.domain.statistics.collections;
 
 import lombok.*;
 
@@ -13,5 +13,6 @@ public class ExceptionDetails implements Serializable {
     private String errorMsg;
     private String cause;
     private LocalDateTime errorDate;
-    private ActiveSupport activeSupport;
+    //private ActiveSupport activeSupport;
+    private String processId;
 }

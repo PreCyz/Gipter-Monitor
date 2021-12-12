@@ -34,4 +34,16 @@ public final class DateTimeUtils {
             return LocalDateTime.from(formatterMap.get(key).parse(localDateTime));
         }
     }
+
+    public static DateTimeFormatter getFormatter(LocalDateTime localDateTime) {
+        String nano = String.valueOf(localDateTime.getNano());
+        while (nano.endsWith("0")) {
+            nano = nano.substring(0, nano.length() - 1);
+        }
+        StringBuilder nanoFormat = new StringBuilder("");
+        for (char c : nano.toCharArray()) {
+            nanoFormat.append("S");
+        }
+        return DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss." + nanoFormat);
+    }
 }

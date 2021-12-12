@@ -3,7 +3,9 @@ package pg.gipter.monitor.ui.fxproperties;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
-import pg.gipter.monitor.statistics.collections.*;
+import org.bson.types.ObjectId;
+import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
+import pg.gipter.monitor.domain.statistics.collections.*;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -292,5 +294,15 @@ public class ActiveSupportDetails {
 
     public void setLastExecutionDate(LocalDateTime lastExecutionDate) {
         this.lastExecutionDate.set(lastExecutionDate);
+    }
+
+    public ExceptionDetails getExceptionDetails() {
+        return new ExceptionDetails(getErrorMsg(), getCause(), getErrorDate(), null);
+    }
+
+    public ActiveSupport getActiveSupport() {
+        return new ActiveSupport(
+                new ObjectId(), isProcessed(), getProcessDateTime(), getUserProcessor(), getComment()
+        );
     }
 }

@@ -8,7 +8,9 @@ import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.StringConverter;
-import pg.gipter.monitor.statistics.services.StatisticService;
+import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
+import pg.gipter.monitor.domain.activeSupports.services.ActiveSupportService;
+import pg.gipter.monitor.domain.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
@@ -151,14 +153,6 @@ public class DetailsController extends AbstractController {
                 .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
                 .orElseGet(() -> "")
         );
-
-        /*processedCheckBox.setSelected(selectedValue.getValue().isProcessed());
-        processDateTimeLabel.setText(Optional.ofNullable(selectedValue.getValue().getProcessDateTime())
-                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
-                .orElseGet(() -> "")
-        );
-        userProcessorLabel.setText(selectedValue.getValue().getUserProcessor());
-        commentTextArea.setText(selectedValue.getValue().getComment());*/
     }
 
     private void setProperties() {
@@ -183,7 +177,15 @@ public class DetailsController extends AbstractController {
         processedCheckBox.setDisable(selectedValue.get().isProcessed());
 
         cancelButton.setOnAction(event -> uiLauncher.closeDetailsWindow());
+        saveButton.setDisable(selectedValue.getValue().isProcessed());
         saveButton.setOnAction(getSaveButtonAction());
+    }
+
+    private Tooltip createTooltip(String text) {
+        Tooltip tooltip = new Tooltip(text);
+        tooltip.setTextAlignment(TextAlignment.LEFT);
+        tooltip.setFont(Font.font("Courier New", 14));
+        return tooltip;
     }
 
     private EventHandler<ActionEvent> getSaveButtonAction() {
@@ -194,19 +196,21 @@ public class DetailsController extends AbstractController {
                 activeSupportDetails.setUserProcessor(System.getProperty("user.name"));
                 selectedValue.set(activeSupportDetails);
 
+                ActiveSupportService activeSupportService = new ActiveSupportService();
+                ActiveSupport savedActiveSupport = activeSupportService.save(selectedValue.getValue().getActiveSupport());
+
                 StatisticService service = new StatisticService();
-                service.process(activeSupportDetails);
+                service.setProcessed(
+                        selectedValue.getValue().getStatisticId(),
+                        selectedValue.getValue().getExceptionDetails(),
+                        savedActiveSupport.getId().toHexString()
+                );
+                processedCheckBox.setDisable(true);
+                saveButton.setDisable(true);
             } else {
                 log.info("Record not selected to process.");
             }
         };
-    }
-
-    private Tooltip createTooltip(String text) {
-        Tooltip tooltip = new Tooltip(text);
-        tooltip.setTextAlignment(TextAlignment.LEFT);
-        tooltip.setFont(Font.font("Courier New", 14));
-        return tooltip;
     }
 
 }

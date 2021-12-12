@@ -5,7 +5,7 @@ import org.bson.*;
 import org.bson.codecs.*;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
-import pg.gipter.monitor.statistics.collections.ActiveSupport;
+import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
 
 public class ActiveSupportCodec implements CollectibleCodec<ActiveSupport> {
 

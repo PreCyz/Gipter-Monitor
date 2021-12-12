@@ -5,7 +5,7 @@ import org.bson.*;
 import org.bson.codecs.*;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.types.ObjectId;
-import pg.gipter.monitor.statistics.collections.ExceptionDetails;
+import pg.gipter.monitor.domain.statistics.collections.ExceptionDetails;
 
 public class ExceptionDetailsCodec implements CollectibleCodec<ExceptionDetails> {
 

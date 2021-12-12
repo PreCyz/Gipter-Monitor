@@ -1,8 +1,9 @@
-package pg.gipter.monitor.statistics.services;
+package pg.gipter.monitor.domain.statistics.services;
 
 import lombok.extern.slf4j.Slf4j;
-import pg.gipter.monitor.statistics.dao.StatisticDao;
-import pg.gipter.monitor.statistics.dao.StatisticDaoFactory;
+import pg.gipter.monitor.domain.statistics.collections.ExceptionDetails;
+import pg.gipter.monitor.domain.statistics.dao.StatisticDao;
+import pg.gipter.monitor.domain.statistics.dao.StatisticDaoFactory;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
 import java.time.LocalDateTime;
@@ -28,8 +29,9 @@ public class StatisticService {
                 .collect(Collectors.toList());
     }
 
-    public void process(ActiveSupportDetails selectedValue) {
-        log.info("Processing record with id [{}].", selectedValue.getStatisticId());
-        statisticDao.saveProcessed(selectedValue);
+    public void setProcessed(String statisticId, ExceptionDetails exceptionDetails, String processId) {
+        log.info("Processing statistic with id [{}].", statisticId);
+
+        statisticDao.saveProcessed(statisticId, exceptionDetails, processId);
     }
 }

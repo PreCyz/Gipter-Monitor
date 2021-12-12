@@ -2,7 +2,7 @@ package pg.gipter.monitor.db;
 
 import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
-import pg.gipter.monitor.statistics.collections.*;
+import pg.gipter.monitor.domain.statistics.collections.*;
 
 import java.util.*;
 
