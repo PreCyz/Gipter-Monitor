@@ -7,11 +7,14 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+import javafx.util.StringConverter;
+import pg.gipter.monitor.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -22,6 +25,10 @@ public class DetailsController extends AbstractController {
     private Label statisticIdLabel;
     @FXML
     private Label usernameLabel;
+    @FXML
+    private Label firstExecutionDateLabel;
+    @FXML
+    private Label lastExecutionDateLabel;
     @FXML
     private Label lastSuccessDateLabel;
     @FXML
@@ -65,48 +72,100 @@ public class DetailsController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
+        selectedValue = uiLauncher.getCurrentActiveSupport();
+        bindProperties();
         initValues();
         setProperties();
     }
 
-    private void initValues() {
-        selectedValue = uiLauncher.getCurrentActiveSupport();
-        statisticIdLabel.setText(selectedValue.get().getStatisticId());
-        usernameLabel.setText(selectedValue.get().getUsername());
-        lastSuccessDateLabel.setText(Optional.ofNullable(selectedValue.get().getLastSuccessDate())
-                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
-                .orElseGet(() -> "")
-        );
-        lastFailedDateLabel.setText(Optional.ofNullable(selectedValue.get().getLastFailedDate())
-                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
-                .orElseGet(() -> "")
-        );
-        javaVersionLabel.setText(selectedValue.get().getJavaVersion());
-        lastUpdateStatusLabel.setText(selectedValue.get().getLastUpdateStatus().name());
-        lastRunTypeLabel.setText(selectedValue.get().getLastRunType().name());
-        controlSystemMapLabel.setText(selectedValue.get().getControlSystemMap().toString());
-        applicationVersionLabel.setText(selectedValue.get().getApplicationVersion());
-        errorMsgLabel.setText(selectedValue.get().getErrorMsg());
-        causeLabel.setText(selectedValue.get().getCause());
-        errorDateLabel.setText(Optional.ofNullable(selectedValue.get().getErrorDate())
-                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
-                .orElseGet(() -> "")
-        );
-        processedCheckBox.setSelected(selectedValue.get().isProcessed());
+    private void bindProperties() {
         processedCheckBox.selectedProperty().bindBidirectional(selectedValue.get().processedProperty());
+        processDateTimeLabel.textProperty()
+                .bindBidirectional(selectedValue.get().processDateTimeProperty(), getLocalDateTimeConverter());
+        userProcessorLabel.textProperty().bindBidirectional(selectedValue.get().userProcessorProperty());
+        commentTextArea.textProperty().bindBidirectional(selectedValue.get().commentProperty());
+    }
 
-        processDateTimeLabel.setText(Optional.ofNullable(selectedValue.get().getProcessDateTime())
+    private StringConverter<LocalDateTime> getLocalDateTimeConverter() {
+        return new StringConverter<>() {
+            @Override
+            public String toString(LocalDateTime object) {
+                if (object == null) {
+                    return "";
+                }
+                return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").format(object);
+            }
+
+            @Override
+            public LocalDateTime fromString(String string) {
+                if (string.isEmpty()) {
+                    return null;
+                }
+                return LocalDateTime.from(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm").parse(string));
+            }
+        };
+    }
+
+    private StringConverter<Boolean> getBooleanConverter() {
+        return new StringConverter<>() {
+            @Override
+            public String toString(Boolean object) {
+                return object.toString();
+            }
+
+            @Override
+            public Boolean fromString(String string) {
+                return Boolean.getBoolean(string);
+            }
+        };
+    }
+
+    private void initValues() {
+        statisticIdLabel.setText(selectedValue.getValue().getStatisticId());
+        usernameLabel.setText(selectedValue.getValue().getUsername());
+        firstExecutionDateLabel.setText(Optional.ofNullable(selectedValue.getValue().getFirstExecutionDate())
                 .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
                 .orElseGet(() -> "")
         );
-        userProcessorLabel.setText(selectedValue.get().getUserProcessor());
-        commentTextArea.setText(selectedValue.get().getComment());
-        commentTextArea.textProperty().bindBidirectional(selectedValue.get().commentProperty());
+        lastExecutionDateLabel.setText(Optional.ofNullable(selectedValue.getValue().getLastExecutionDate())
+                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
+                .orElseGet(() -> "")
+        );
+        lastSuccessDateLabel.setText(Optional.ofNullable(selectedValue.getValue().getLastSuccessDate())
+                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
+                .orElseGet(() -> "")
+        );
+        lastFailedDateLabel.setText(Optional.ofNullable(selectedValue.getValue().getLastFailedDate())
+                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
+                .orElseGet(() -> "")
+        );
+        javaVersionLabel.setText(selectedValue.getValue().getJavaVersion());
+        lastUpdateStatusLabel.setText(selectedValue.getValue().getLastUpdateStatus().name());
+        lastRunTypeLabel.setText(selectedValue.getValue().getLastRunType().name());
+        controlSystemMapLabel.setText(selectedValue.getValue().getControlSystemMap().toString());
+        applicationVersionLabel.setText(selectedValue.getValue().getApplicationVersion());
+
+        errorMsgLabel.setText(selectedValue.getValue().getErrorMsg());
+        causeLabel.setText(selectedValue.getValue().getCause());
+        errorDateLabel.setText(Optional.ofNullable(selectedValue.getValue().getErrorDate())
+                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
+                .orElseGet(() -> "")
+        );
+
+        /*processedCheckBox.setSelected(selectedValue.getValue().isProcessed());
+        processDateTimeLabel.setText(Optional.ofNullable(selectedValue.getValue().getProcessDateTime())
+                .map(ldt -> ldt.format(YYYY_MM_DD_HH_MM))
+                .orElseGet(() -> "")
+        );
+        userProcessorLabel.setText(selectedValue.getValue().getUserProcessor());
+        commentTextArea.setText(selectedValue.getValue().getComment());*/
     }
 
     private void setProperties() {
         statisticIdLabel.setTooltip(createTooltip("Statistic ID"));
         usernameLabel.setTooltip(createTooltip("Username"));
+        firstExecutionDateLabel.setTooltip(createTooltip("First execution date"));
+        lastExecutionDateLabel.setTooltip(createTooltip("Last execution date"));
         lastSuccessDateLabel.setTooltip(createTooltip("Last success date"));
         lastFailedDateLabel.setTooltip(createTooltip("Last failed date"));
         javaVersionLabel.setTooltip(createTooltip("Java version"));
@@ -129,7 +188,17 @@ public class DetailsController extends AbstractController {
 
     private EventHandler<ActionEvent> getSaveButtonAction() {
         return event -> {
-            System.out.printf("Is processed %b%n", selectedValue.getValue().isProcessed());
+            if (processedCheckBox.isSelected()) {
+                ActiveSupportDetails activeSupportDetails = selectedValue.getValue();
+                activeSupportDetails.setProcessDateTime(LocalDateTime.now());
+                activeSupportDetails.setUserProcessor(System.getProperty("user.name"));
+                selectedValue.set(activeSupportDetails);
+
+                StatisticService service = new StatisticService();
+                service.process(activeSupportDetails);
+            } else {
+                log.info("Record not selected to process.");
+            }
         };
     }
 

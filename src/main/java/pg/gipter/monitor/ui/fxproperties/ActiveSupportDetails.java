@@ -11,6 +11,8 @@ import java.util.*;
 public class ActiveSupportDetails {
     private final StringProperty statisticId;
     private final StringProperty username;
+    private final ObjectProperty<LocalDateTime> firstExecutionDate;
+    private final ObjectProperty<LocalDateTime> lastExecutionDate;
     private final ObjectProperty<LocalDateTime> lastSuccessDate;
     private final ObjectProperty<LocalDateTime> lastFailedDate;
     private final StringProperty javaVersion;
@@ -29,6 +31,8 @@ public class ActiveSupportDetails {
     public ActiveSupportDetails() {
         this.statisticId = new SimpleStringProperty();
         this.username = new SimpleStringProperty();
+        this.firstExecutionDate = new SimpleObjectProperty<>();
+        this.lastExecutionDate = new SimpleObjectProperty<>();
         this.lastSuccessDate = new SimpleObjectProperty<>();
         this.lastFailedDate = new SimpleObjectProperty<>();
         this.javaVersion = new SimpleStringProperty();
@@ -52,6 +56,8 @@ public class ActiveSupportDetails {
                 ActiveSupportDetails asd = new ActiveSupportDetails();
                 asd.setStatisticId(statistic.getId().toHexString());
                 asd.setUsername(statistic.getUsername());
+                asd.setFirstExecutionDate(statistic.getFirstExecutionDate());
+                asd.setLastExecutionDate(statistic.getLastExecutionDate());
                 asd.setLastSuccessDate(statistic.getLastSuccessDate());
                 asd.setLastFailedDate(statistic.getLastFailedDate());
                 asd.setJavaVersion(statistic.getJavaVersion());
@@ -262,5 +268,29 @@ public class ActiveSupportDetails {
 
     public StringProperty commentProperty() {
         return comment;
+    }
+
+    public LocalDateTime getFirstExecutionDate() {
+        return firstExecutionDate.get();
+    }
+
+    public ObjectProperty<LocalDateTime> firstExecutionDateProperty() {
+        return firstExecutionDate;
+    }
+
+    public void setFirstExecutionDate(LocalDateTime firstExecutionDate) {
+        this.firstExecutionDate.set(firstExecutionDate);
+    }
+
+    public LocalDateTime getLastExecutionDate() {
+        return lastExecutionDate.get();
+    }
+
+    public ObjectProperty<LocalDateTime> lastExecutionDateProperty() {
+        return lastExecutionDate;
+    }
+
+    public void setLastExecutionDate(LocalDateTime lastExecutionDate) {
+        this.lastExecutionDate.set(lastExecutionDate);
     }
 }

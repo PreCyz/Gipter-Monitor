@@ -1,7 +1,6 @@
 package pg.gipter.monitor.ui.main;
 
 public enum Filter {
-    OTHERS(""),
     DIFF("Diff could not be produced"),
     REPOSITORIES("For given repositories"),
     UNAUTHORIZED("Unauthorized");

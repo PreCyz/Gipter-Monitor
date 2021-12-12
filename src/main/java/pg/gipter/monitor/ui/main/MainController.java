@@ -2,6 +2,7 @@ package pg.gipter.monitor.ui.main;
 
 import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -26,6 +27,7 @@ import java.util.*;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
 
 public class MainController extends AbstractController {
 
@@ -36,7 +38,7 @@ public class MainController extends AbstractController {
     @FXML
     private Button getStatisticsButton;
     @FXML
-    private Label couldNotBeProducedLabel;
+    private Label diffLabel;
     @FXML
     private Label unauthorizedLabel;
     @FXML
@@ -53,6 +55,28 @@ public class MainController extends AbstractController {
     private StatisticService statisticService;
 
     private SimpleObjectProperty<ActiveSupportDetails> selectedValue;
+    private SimpleStringProperty diffStringProperty;
+    private SimpleStringProperty unauthorizedStringProperty;
+    private SimpleStringProperty importantStringProperty;
+    private SimpleStringProperty totalStringProperty;
+
+    private enum Summary {
+        TOTAL("Total: "),
+        DIFF_COULD_NOT_PRODUCE("Diff could not be produced: "),
+        IMPORTANT("Important: "),
+        UNAUTHORIZED("Unauthorized: ");
+
+        private final String text;
+        Summary(String text) {
+            this.text = text;
+        }
+
+        String text() {
+            return text;
+        }
+    }
+
+    private Map<Summary, String> summaryMap = new EnumMap<>(Summary.class);
 
     public MainController(UILauncher uiLauncher) {
         super(uiLauncher);
@@ -61,14 +85,22 @@ public class MainController extends AbstractController {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         super.initialize(location, resources);
-        statisticService = new StatisticService();
-        selectedValue = new SimpleObjectProperty<>();
-        uiLauncher.bind(selectedValue);
-
+        initValues();
         setColumns(diffTableView);
         setColumns(unauthorizedTableView);
         setColumns(importantTableView);
         setProperties();
+    }
+
+    private void initValues() {
+        statisticService = new StatisticService();
+        selectedValue = new SimpleObjectProperty<>();
+        uiLauncher.bind(selectedValue);
+        summaryMap = Arrays.stream(Summary.values()).collect(toMap(summary -> summary, Summary::text));
+        diffStringProperty = new SimpleStringProperty(summaryMap.get(Summary.DIFF_COULD_NOT_PRODUCE));
+        unauthorizedStringProperty = new SimpleStringProperty(summaryMap.get(Summary.UNAUTHORIZED));
+        importantStringProperty = new SimpleStringProperty(summaryMap.get(Summary.IMPORTANT));
+        totalStringProperty = new SimpleStringProperty(summaryMap.get(Summary.TOTAL));
     }
 
     private void setColumns(TableView<ActiveSupportDetails> tableView) {
@@ -163,20 +195,6 @@ public class MainController extends AbstractController {
         tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
 
-    private StringConverter<Boolean> getBooleanConverter() {
-        return new StringConverter<>() {
-            @Override
-            public String toString(Boolean object) {
-                return object.toString();
-            }
-
-            @Override
-            public Boolean fromString(String string) {
-                return Boolean.getBoolean(string);
-            }
-        };
-    }
-
     private StringConverter<Map> getControlSystemConverter() {
         return new StringConverter<>() {
             @Override
@@ -245,6 +263,10 @@ public class MainController extends AbstractController {
         diffTableView.setRowFactory(getTableViewTableRowCallback());
         importantTableView.setRowFactory(getTableViewTableRowCallback());
         unauthorizedTableView.setRowFactory(getTableViewTableRowCallback());
+        diffLabel.textProperty().bindBidirectional(diffStringProperty);
+        unauthorizedLabel.textProperty().bindBidirectional(unauthorizedStringProperty);
+        importantLabel.textProperty().bindBidirectional(importantStringProperty);
+        totalLabel.textProperty().bindBidirectional(totalStringProperty);
     }
 
     private Callback<TableView<ActiveSupportDetails>, TableRow<ActiveSupportDetails>> getTableViewTableRowCallback() {
@@ -273,14 +295,14 @@ public class MainController extends AbstractController {
         };
     }
 
-    private void groupByFilters(List<ActiveSupportDetails> result) {
-        List<ActiveSupportDetails> diffCouldNotBeProduced = result.stream()
+    private void groupByFilters(List<ActiveSupportDetails> total) {
+        List<ActiveSupportDetails> diffCouldNotBeProduced = total.stream()
                 .filter(getFilterPredicate(Filter.DIFF).or(getFilterPredicate(Filter.REPOSITORIES)))
                 .collect(toList());
-        List<ActiveSupportDetails> unauthorized = result.stream()
+        List<ActiveSupportDetails> unauthorized = total.stream()
                 .filter(getFilterPredicate(Filter.UNAUTHORIZED))
                 .collect(toList());
-        List<ActiveSupportDetails> important = result.stream()
+        List<ActiveSupportDetails> important = total.stream()
                 .filter(getFilterPredicate(Filter.DIFF).negate())
                 .filter(getFilterPredicate(Filter.REPOSITORIES).negate())
                 .filter(getFilterPredicate(Filter.UNAUTHORIZED).negate())
@@ -290,10 +312,10 @@ public class MainController extends AbstractController {
         unauthorizedTableView.setItems(FXCollections.observableList(unauthorized));
         importantTableView.setItems(FXCollections.observableList(important));
 
-        couldNotBeProducedLabel.setText("Diff could not be produced: " + diffCouldNotBeProduced.size());
-        unauthorizedLabel.setText("Unauthorized [401]: " + unauthorized.size());
-        importantLabel.setText("Important: " + important.size());
-        totalLabel.setText("Total: " + result.size());
+        diffStringProperty.set(summaryMap.get(Summary.DIFF_COULD_NOT_PRODUCE) + diffCouldNotBeProduced.size());
+        unauthorizedStringProperty.set(summaryMap.get(Summary.UNAUTHORIZED) + unauthorized.size());
+        importantStringProperty.set(summaryMap.get(Summary.IMPORTANT) + important.size());
+        totalStringProperty.set(summaryMap.get(Summary.TOTAL) + total.size());
     }
 
     private Predicate<ActiveSupportDetails> getFilterPredicate(final Filter filter) {
