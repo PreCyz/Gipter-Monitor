@@ -28,4 +28,8 @@ public class StatisticService {
                 .collect(Collectors.toList());
     }
 
+    public void process(ActiveSupportDetails selectedValue) {
+        log.info("Processing record with id [{}].", selectedValue.getStatisticId());
+        statisticDao.saveProcessed(selectedValue);
+    }
 }

@@ -5,15 +5,20 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import pg.gipter.monitor.db.MongoDaoConfig;
 import pg.gipter.monitor.statistics.collections.*;
+import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static pg.gipter.monitor.utils.DateTimeUtils.MONGO_FORMATTER;
 
+@Slf4j
 class StatisticRepository extends MongoDaoConfig implements StatisticDao {
 
     StatisticRepository() {
@@ -96,5 +101,29 @@ class StatisticRepository extends MongoDaoConfig implements StatisticDao {
             cursor.forEachRemaining(statistics::add);
         }
         return statistics;
+    }
+
+    @Override
+    public void saveProcessed(ActiveSupportDetails selectedValue) {
+        BasicDBObject activeSupportDocument = new BasicDBObject().append("exceptions.$.activeSupport", new ActiveSupport(
+                selectedValue.isProcessed(),
+                selectedValue.getProcessDateTime(),
+                selectedValue.getUserProcessor(),
+                selectedValue.getComment()
+        ));
+        String errorDateStr = selectedValue.getErrorDate()
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS"));
+
+        UpdateResult updateResult = collection.updateOne(Filters.and(
+                        Filters.eq(selectedValue.getStatisticId()),
+                        Filters.eq("exceptions.cause", selectedValue.getCause()),
+                        Filters.eq("exceptions.errorMsg", selectedValue.getErrorMsg()),
+                        Filters.eq("exceptions.errorDate", errorDateStr)
+                ),
+                new BasicDBObject().append("$set", activeSupportDocument)
+        );
+
+        log.info("Records found: [{}].", updateResult.getMatchedCount());
+        log.info("Records updated: [{}].", updateResult.getModifiedCount());
     }
 }
