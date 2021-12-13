@@ -1,13 +1,14 @@
 package pg.gipter.monitor.domain.statistics.services;
 
 import lombok.extern.slf4j.Slf4j;
-import pg.gipter.monitor.domain.statistics.collections.ExceptionDetails;
+import pg.gipter.monitor.domain.activeSupports.dto.ProcessingDetails;
 import pg.gipter.monitor.domain.statistics.dao.StatisticDao;
 import pg.gipter.monitor.domain.statistics.dao.StatisticDaoFactory;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -31,8 +32,17 @@ public class StatisticService {
                 .collect(toList());
     }
 
-    public void setProcessed(String statisticId, ExceptionDetails exceptionDetails, String processId) {
-        log.info("Processing statistic with id [{}].", statisticId);
-        statisticDao.saveProcessed(statisticId, exceptionDetails, processId);
+    public void setProcessed(ProcessingDetails processingDetails) {
+        log.info("Processing statistic with id [{}].", processingDetails.getStatisticId());
+        log.info("Processing statistic with id [{}].", processingDetails.getStatisticId());
+        statisticDao.saveProcessed(processingDetails);
+    }
+
+    public void processAll(List<ProcessingDetails> processingDetailsList) {
+        log.info("Processing statistics with ids [{}].", processingDetailsList.stream()
+                .map(ProcessingDetails::getStatisticId)
+                .collect(Collectors.joining(","))
+        );
+        statisticDao.saveAllProcessed(processingDetailsList);
     }
 }

@@ -8,7 +8,7 @@ import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.StringConverter;
-import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
+import pg.gipter.monitor.domain.activeSupports.dto.ProcessingDetails;
 import pg.gipter.monitor.domain.activeSupports.services.ActiveSupportService;
 import pg.gipter.monitor.domain.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
@@ -192,14 +192,12 @@ public class DetailsController extends AbstractController {
                 selectedValue.setValue(activeSupportDetails);
 
                 ActiveSupportService activeSupportService = new ActiveSupportService();
-                ActiveSupport savedActiveSupport = activeSupportService.save(selectedValue.getValue().getActiveSupport());
-                selectedValue.getValue().setProcessingId(savedActiveSupport.getId().toHexString());
+                activeSupportService.save(selectedValue.getValue().getActiveSupport());
 
                 StatisticService service = new StatisticService();
-                service.setProcessed(
+                service.setProcessed(new ProcessingDetails(
                         selectedValue.getValue().getStatisticId(),
-                        selectedValue.getValue().getExceptionDetails(),
-                        savedActiveSupport.getId().toHexString()
+                        selectedValue.getValue().getExceptionDetails())
                 );
                 processedCheckBox.setDisable(true);
                 saveButton.setDisable(true);

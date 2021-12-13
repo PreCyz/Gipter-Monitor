@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -15,6 +16,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
+import pg.gipter.monitor.domain.activeSupports.dto.ProcessingDetails;
+import pg.gipter.monitor.domain.activeSupports.services.ActiveSupportService;
 import pg.gipter.monitor.domain.statistics.collections.RunType;
 import pg.gipter.monitor.domain.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
@@ -38,6 +42,8 @@ public class MainController extends AbstractController {
     private DatePicker fromDatePicker;
     @FXML
     private Button getStatisticsButton;
+    @FXML
+    private Button processButton;
     @FXML
     private Label diffLabel;
     @FXML
@@ -113,7 +119,7 @@ public class MainController extends AbstractController {
         return (observable, oldValue, newValue) -> {
             if (newValue == null) {
                 List<ActiveSupportDetails> refreshedItems = failedTries.stream()
-                        .filter(activeSupportDetails -> !activeSupportDetails.isProcessed())
+                        .filter(asd -> !asd.isProcessed())
                         .collect(toList());
                 groupByFilters(refreshedItems);
             }
@@ -236,7 +242,7 @@ public class MainController extends AbstractController {
                 causeColumn
         );
 
-        tableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+        tableView.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
     }
 
     private StringConverter<Map> getControlSystemConverter() {
@@ -300,6 +306,9 @@ public class MainController extends AbstractController {
         importantLabel.textProperty().bindBidirectional(importantStringProperty);
         importantLabel.setOnMouseClicked(getLabelOnClickAction(2));
         totalLabel.textProperty().bindBidirectional(totalStringProperty);
+        processButton.setDisable(true);
+        mainTabPane.setOnMouseClicked(getTabPaneClickAction());
+        processButton.setOnAction(getProcessButtonAction());
     }
 
     private EventHandler<ActionEvent> getStatisticsEventHandler() {
@@ -321,6 +330,8 @@ public class MainController extends AbstractController {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
                     selectedValue.setValue(row.getItem());
                     uiLauncher.openDetailsWindow();
+                } else if (event.getClickCount() == 1) {
+                    processButton.setDisable(false);
                 }
             });
             return row;
@@ -331,7 +342,58 @@ public class MainController extends AbstractController {
         return event -> {
             if (event.getClickCount() == 1) {
                 mainTabPane.getSelectionModel().select(tabIndex);
+                processButton.setDisable(true);
             }
+        };
+    }
+
+    private EventHandler<MouseEvent> getTabPaneClickAction() {
+        return event -> {
+            if (event.getClickCount() == 1) {
+                processButton.setDisable(true);
+            }
+        };
+    }
+
+    private EventHandler<ActionEvent> getProcessButtonAction() {
+        return event -> {
+            processButton.setDisable(true);
+            Platform.runLater(() -> {
+                ObservableList<ActiveSupportDetails> selectedItems;
+                switch (mainTabPane.getSelectionModel().getSelectedIndex()) {
+                    case 0 :
+                        selectedItems = diffTableView.getSelectionModel().getSelectedItems();
+                        break;
+                    case 1 :
+                        selectedItems = unauthorizedTableView.getSelectionModel().getSelectedItems();
+                        break;
+                    default:
+                        selectedItems = importantTableView.getSelectionModel().getSelectedItems();
+                }
+
+                final LocalDateTime processDateTime = LocalDateTime.now();
+                selectedItems.forEach(asd -> {
+                    asd.setProcessDateTime(processDateTime);
+                    asd.setUserProcessor(System.getProperty("user.name"));
+                });
+
+                List<ActiveSupport> activeSupports = selectedItems.stream()
+                        .map(ActiveSupportDetails::getActiveSupport)
+                        .collect(toList());
+                new ActiveSupportService().saveAll(activeSupports);
+
+                List<ProcessingDetails> processingDetailsList = selectedItems.stream()
+                        .map(asd -> new ProcessingDetails(asd.getStatisticId(), asd.getExceptionDetails()))
+                        .collect(toList());
+
+                StatisticService statisticService = new StatisticService();
+                statisticService.processAll(processingDetailsList);
+
+                LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
+                failedTries = statisticService.getFailedTries(from);
+                groupByFilters(failedTries);
+            });
+
         };
     }
 }

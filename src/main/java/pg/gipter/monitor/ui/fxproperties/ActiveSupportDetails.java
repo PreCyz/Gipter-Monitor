@@ -73,7 +73,7 @@ public class ActiveSupportDetails {
                 asd.setCause(ed.getCause());
                 asd.setErrorDate(ed.getErrorDate());
                 asd.setProcessed(asd.isProcessed());
-                asd.setProcessingId(ed.getProcessId());
+                asd.setProcessingId(ed.getProcessingId());
                 asd.setProcessDateTime(asd.getProcessDateTime());
                 asd.setUserProcessor(asd.getUserProcessor());
                 asd.setComment(asd.getComment());
@@ -312,12 +312,14 @@ public class ActiveSupportDetails {
     }
 
     public ExceptionDetails getExceptionDetails() {
-        return new ExceptionDetails(getErrorMsg(), getCause(), getErrorDate(), null);
+        return new ExceptionDetails(getErrorMsg(), getCause(), getErrorDate(), getProcessingId());
     }
 
     public ActiveSupport getActiveSupport() {
+        ObjectId activeSupportId = new ObjectId();
+        setProcessingId(activeSupportId.toHexString());
         return new ActiveSupport(
-                new ObjectId(), isProcessed(), getProcessDateTime(), getUserProcessor(), getComment()
+                activeSupportId, getStatisticId(), isProcessed(), getProcessDateTime(), getUserProcessor(), getComment()
         );
     }
 }

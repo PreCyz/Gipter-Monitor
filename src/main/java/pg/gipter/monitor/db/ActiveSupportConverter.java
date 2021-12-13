@@ -12,6 +12,7 @@ public class ActiveSupportConverter implements MongoConverter<ActiveSupport> {
     public Document convert(ActiveSupport activeSupport) {
         Document document = new Document();
         document.put("_id", activeSupport.getId());
+        document.put("statisticId", activeSupport.getStatisticId());
         document.put("processed", activeSupport.getProcessed());
         document.put("processDateTime", MONGO_FORMATTER.format(activeSupport.getProcessDateTime()));
         document.put("userProcessor", activeSupport.getUserProcessor());
@@ -23,6 +24,7 @@ public class ActiveSupportConverter implements MongoConverter<ActiveSupport> {
     public ActiveSupport convert(Document document) {
         return new ActiveSupport(
                 document.getObjectId("_id"),
+                document.getString("statisticId"),
                 document.getBoolean("processed"),
                 getLocalDateTime(document, "processDateTime"),
                 document.getString("userProcessor"),

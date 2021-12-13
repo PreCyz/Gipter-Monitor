@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import pg.gipter.monitor.db.MongoDaoConfig;
+import pg.gipter.monitor.domain.activeSupports.dto.ProcessingDetails;
 import pg.gipter.monitor.domain.statistics.collections.*;
 import pg.gipter.monitor.utils.DateTimeUtils;
 
@@ -43,16 +44,17 @@ class StatisticRepository extends MongoDaoConfig implements StatisticDao {
     }
 
     @Override
-    public void saveProcessed(String statisticId, ExceptionDetails exceptionDetails, String processId) {
+    public void saveProcessed(ProcessingDetails processingDetails) {
+        ExceptionDetails exceptionDetails = processingDetails.getExceptionDetails();
         DateTimeFormatter dateTimeFormatter = DateTimeUtils.getFormatter(exceptionDetails.getErrorDate());
         String errorDateStr = exceptionDetails.getErrorDate().format(dateTimeFormatter);
 
         Map<String, String> map = new HashMap<>();
-        map.put("exceptions.$.processId", processId);
+        map.put("exceptions.$.processId", exceptionDetails.getProcessingId());
 
         UpdateResult updateResult = collection.updateOne(
                 Filters.and(
-                        Filters.eq("_id", new ObjectId(statisticId)),
+                        Filters.eq("_id", new ObjectId(processingDetails.getStatisticId())),
                         Filters.elemMatch("exceptions",
                                 Filters.and(
                                         Filters.eq("cause", exceptionDetails.getCause()),
@@ -64,5 +66,10 @@ class StatisticRepository extends MongoDaoConfig implements StatisticDao {
         );
 
         log.info("Records found: [{}], records updated: [{}]", updateResult.getMatchedCount(), updateResult.getModifiedCount());
+    }
+
+    @Override
+    public void saveAllProcessed(List<ProcessingDetails> processingDetailsList) {
+        processingDetailsList.forEach(this::saveProcessed);
     }
 }

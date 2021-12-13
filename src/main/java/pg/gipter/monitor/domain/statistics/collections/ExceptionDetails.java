@@ -13,6 +13,5 @@ public class ExceptionDetails implements Serializable {
     private String errorMsg;
     private String cause;
     private LocalDateTime errorDate;
-    //private ActiveSupport activeSupport;
-    private String processId;
+    private String processingId;
 }

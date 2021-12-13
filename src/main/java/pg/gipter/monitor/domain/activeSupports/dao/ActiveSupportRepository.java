@@ -4,9 +4,14 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.ReplaceOptions;
 import com.mongodb.client.result.UpdateResult;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.Document;
 import pg.gipter.monitor.db.ActiveSupportConverter;
 import pg.gipter.monitor.db.MongoDaoConfig;
 import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
+
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 class ActiveSupportRepository extends MongoDaoConfig implements ActiveSupportDao {
@@ -30,5 +35,13 @@ class ActiveSupportRepository extends MongoDaoConfig implements ActiveSupportDao
                 updateResult.getUpsertedId()
         );
         return activeSupport;
+    }
+
+    @Override
+    public List<ActiveSupport> saveAll(List<ActiveSupport> activeSupports) {
+        ActiveSupportConverter converter = new ActiveSupportConverter();
+        List<Document> documents = activeSupports.stream().map(converter::convert).collect(toList());
+        collection.insertMany(documents);
+        return activeSupports;
     }
 }

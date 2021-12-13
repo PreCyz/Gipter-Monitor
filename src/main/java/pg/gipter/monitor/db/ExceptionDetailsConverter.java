@@ -15,7 +15,7 @@ class ExceptionDetailsConverter implements MongoConverter<ExceptionDetails> {
         document.put("cause", exceptionDetails.getCause());
         document.put("errorDate", MONGO_FORMATTER.format(exceptionDetails.getErrorDate()));
         document.put("errorMsg", exceptionDetails.getErrorMsg());
-        document.put("processId", exceptionDetails.getProcessId());
+        document.put("processId", exceptionDetails.getProcessingId());
         return document;
     }
 
@@ -26,7 +26,7 @@ class ExceptionDetailsConverter implements MongoConverter<ExceptionDetails> {
         exceptionDetails.setCause(document.getString("cause"));
         exceptionDetails.setErrorDate(getLocalDateTime(document, "errorDate"));
         exceptionDetails.setErrorMsg(document.getString("errorMsg"));
-        exceptionDetails.setProcessId(document.getString("processId"));
+        exceptionDetails.setProcessingId(document.getString("processId"));
         /*Optional.ofNullable(document.get("activeSupport", Document.class))
                 .ifPresent(d -> exceptionDetails.setActiveSupport(
                         new ActiveSupportConverter().convert(document.get("activeSupport", Document.class))

@@ -13,6 +13,7 @@ public class ActiveSupport {
     public static final String COLLECTION_NAME = "activeSupports";
 
     private ObjectId id;
+    private String statisticId;
     private Boolean processed;
     private LocalDateTime processDateTime;
     private String userProcessor;
