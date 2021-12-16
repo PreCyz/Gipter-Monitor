@@ -83,7 +83,7 @@ public abstract class MongoDaoConfig {
             collection = mongoClient.getDatabase(databaseName).getCollection(collectionName);
             statisticsAvailable = true;
 
-            logger.info("Connection to the database established. [host: {}, databaseName: {}]", host, databaseName);
+            logger.debug("Connection to the database established. [host: {}, databaseName: {}]", host, databaseName);
         } catch (Exception ex) {
             logger.error("Can not establish connection to the database.");
             statisticsAvailable = false;

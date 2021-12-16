@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -24,11 +25,13 @@ import pg.gipter.monitor.domain.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
+import pg.gipter.monitor.utils.ThreadUtils;
 
 import java.net.URL;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Predicate;
 
 import static java.util.stream.Collectors.toList;
@@ -62,6 +65,8 @@ public class MainController extends AbstractController {
     private TabPane mainTabPane;
     @FXML
     private Button exitButton;
+    @FXML
+    private ProgressBar progressBar;
 
     private StatisticService statisticService;
 
@@ -312,17 +317,35 @@ public class MainController extends AbstractController {
         mainTabPane.setOnMouseClicked(getTabPaneClickAction());
         processButton.setOnAction(getProcessButtonAction());
         exitButton.setOnAction(event -> Platform.exit());
+        progressBar.setVisible(false);
     }
 
     private EventHandler<ActionEvent> getStatisticsEventHandler() {
         return event -> {
+            progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
+            progressBar.setVisible(true);
             getStatisticsButton.setDisable(true);
-            Platform.runLater(() -> {
-                LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
-                failedTries = statisticService.getFailedTries(from);
+
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() {
+                    LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
+                    failedTries = statisticService.getFailedTries(from);
+                    return null;
+                }
+            };
+
+            task.setOnSucceeded(ev -> Platform.runLater(() -> {
                 groupByFilters(failedTries);
                 getStatisticsButton.setDisable(false);
-            });
+                progressBar.setProgress(1d);
+            }));
+
+            try {
+                ThreadUtils.submit(task);
+            } catch (ExecutionException | InterruptedException e) {
+                log.error("Something went wrong", e);
+            }
         };
     }
 
@@ -360,42 +383,60 @@ public class MainController extends AbstractController {
 
     private EventHandler<ActionEvent> getProcessButtonAction() {
         return event -> {
+            progressBar.setVisible(true);
+            progressBar.setProgress(ProgressIndicator.INDETERMINATE_PROGRESS);
             processButton.setDisable(true);
-            Platform.runLater(() -> {
-                ObservableList<ActiveSupportDetails> selectedItems;
-                switch (mainTabPane.getSelectionModel().getSelectedIndex()) {
-                    case 0 :
-                        selectedItems = diffTableView.getSelectionModel().getSelectedItems();
-                        break;
-                    case 1 :
-                        selectedItems = unauthorizedTableView.getSelectionModel().getSelectedItems();
-                        break;
-                    default:
-                        selectedItems = importantTableView.getSelectionModel().getSelectedItems();
+
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() {
+                    ObservableList<ActiveSupportDetails> selectedItems;
+                    switch (mainTabPane.getSelectionModel().getSelectedIndex()) {
+                        case 0 :
+                            selectedItems = diffTableView.getSelectionModel().getSelectedItems();
+                            break;
+                        case 1 :
+                            selectedItems = unauthorizedTableView.getSelectionModel().getSelectedItems();
+                            break;
+                        default:
+                            selectedItems = importantTableView.getSelectionModel().getSelectedItems();
+                    }
+
+                    final LocalDateTime processDateTime = LocalDateTime.now();
+                    selectedItems.forEach(asd -> {
+                        asd.setProcessDateTime(processDateTime);
+                        asd.setUserProcessor(System.getProperty("user.name"));
+                    });
+
+                    List<ActiveSupport> activeSupports = selectedItems.stream()
+                            .map(ActiveSupportDetails::getActiveSupport)
+                            .collect(toList());
+                    new ActiveSupportService().saveAll(activeSupports);
+
+                    List<ProcessingDetails> processingDetailsList = selectedItems.stream()
+                            .map(asd -> new ProcessingDetails(asd.getStatisticId(), asd.getExceptionDetails()))
+                            .collect(toList());
+
+                    StatisticService statisticService = new StatisticService();
+                    statisticService.processAll(processingDetailsList);
+
+                    LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
+                    failedTries = statisticService.getFailedTries(from);
+
+                    return null;
                 }
+            };
 
-                final LocalDateTime processDateTime = LocalDateTime.now();
-                selectedItems.forEach(asd -> {
-                    asd.setProcessDateTime(processDateTime);
-                    asd.setUserProcessor(System.getProperty("user.name"));
-                });
-
-                List<ActiveSupport> activeSupports = selectedItems.stream()
-                        .map(ActiveSupportDetails::getActiveSupport)
-                        .collect(toList());
-                new ActiveSupportService().saveAll(activeSupports);
-
-                List<ProcessingDetails> processingDetailsList = selectedItems.stream()
-                        .map(asd -> new ProcessingDetails(asd.getStatisticId(), asd.getExceptionDetails()))
-                        .collect(toList());
-
-                StatisticService statisticService = new StatisticService();
-                statisticService.processAll(processingDetailsList);
-
-                LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
-                failedTries = statisticService.getFailedTries(from);
+            task.setOnSucceeded(evt -> Platform.runLater(() -> {
                 groupByFilters(failedTries);
-            });
+                progressBar.setProgress(1d);
+            }));
+
+            try {
+                ThreadUtils.submit(task);
+            } catch (ExecutionException | InterruptedException e) {
+                log.error("Something went wrong", e);
+            }
 
         };
     }

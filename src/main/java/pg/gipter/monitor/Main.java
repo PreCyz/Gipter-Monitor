@@ -23,12 +23,12 @@ public class Main extends Application {
     private static final Logger logger = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) {
-        logger.info("Gipter started.");
+        logger.info("Gipter monitor started.");
         Main mObj = new Main(args);
         mObj.setLoggerLevel("INFO");
         logger.info("Java version '{}'.", SystemUtils.javaVersion());
         logger.info("Version of application '{}'.", VersionService.getInstance().getVersion());
-        logger.info("Gipter can use '{}' threads.", Runtime.getRuntime().availableProcessors());
+        logger.info("Gipter-Monitor can use '{}' threads.", Runtime.getRuntime().availableProcessors());
         launch(args);
     }
 

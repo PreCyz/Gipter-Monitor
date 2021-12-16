@@ -13,12 +13,15 @@ import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 import javafx.util.StringConverter;
+import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
 import pg.gipter.monitor.domain.activeSupports.dto.ProcessingDetails;
 import pg.gipter.monitor.domain.activeSupports.services.ActiveSupportService;
+import pg.gipter.monitor.domain.statistics.collections.ExceptionDetails;
 import pg.gipter.monitor.domain.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
+import pg.gipter.monitor.utils.ThreadUtils;
 
 import java.awt.*;
 import java.io.IOException;
@@ -27,6 +30,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 
 public class DetailsController extends AbstractController {
 
@@ -201,36 +205,43 @@ public class DetailsController extends AbstractController {
     private EventHandler<ActionEvent> getSaveButtonAction() {
         return event -> {
             progressBar.setVisible(true);
-            Task<Void> task = new Task<>() {
-                @Override
-                protected Void call() throws Exception {
-                    if (processedCheckBox.isSelected()) {
-                        saveButton.setDisable(true);
-                        ActiveSupportDetails activeSupportDetails = selectedValue.getValue();
-                        activeSupportDetails.setProcessDateTime(LocalDateTime.now());
-                        activeSupportDetails.setUserProcessor(System.getProperty("user.name"));
-                        selectedValue.setValue(activeSupportDetails);
+            if (processedCheckBox.isSelected()) {
+                saveButton.setDisable(true);
+                saveButton.setDisable(true);
+                ActiveSupportDetails activeSupportDetails = selectedValue.getValue();
+                activeSupportDetails.setProcessDateTime(LocalDateTime.now());
+                activeSupportDetails.setUserProcessor(System.getProperty("user.name"));
+                selectedValue.setValue(activeSupportDetails);
+                final ActiveSupport activeSupport = selectedValue.getValue().getActiveSupport();
+                final ExceptionDetails exceptionDetails = selectedValue.getValue().getExceptionDetails();
 
+                Task<Void> task = new Task<>() {
+                    @Override
+                    protected Void call() {
                         ActiveSupportService activeSupportService = new ActiveSupportService();
-                        activeSupportService.save(selectedValue.getValue().getActiveSupport());
+                        activeSupportService.save(activeSupport);
 
                         StatisticService service = new StatisticService();
-                        service.setProcessed(new ProcessingDetails(
-                                selectedValue.getValue().getStatisticId(),
-                                selectedValue.getValue().getExceptionDetails())
-                        );
-                        processedCheckBox.setDisable(true);
-                        saveButton.setDisable(true);
-                    } else {
-                        log.info("Record not selected to process.");
+                        service.setProcessed(new ProcessingDetails(activeSupport.getStatisticId(), exceptionDetails));
+
+                        return null;
                     }
-                    return null;
+                };
+
+                task.setOnSucceeded(evt -> Platform.runLater(() -> {
+                    processedCheckBox.setDisable(true);
+                    saveButton.setDisable(true);
+                    progressBar.setProgress(1d);
+                }));
+
+                try {
+                    ThreadUtils.submit(task);
+                } catch (ExecutionException | InterruptedException e) {
+                    log.error("Something went wrong", e);
                 }
-            };
-
-            task.setOnSucceeded(evt -> Platform.runLater(() -> progressBar.setVisible(false)));
-
-            new Thread(task).start();
+            } else {
+                log.info("Record not selected to process.");
+            }
         };
     }
 

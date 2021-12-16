@@ -141,5 +141,6 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
+      <ProgressBar fx:id="progressBar" layoutX="389.0" layoutY="29.0" prefWidth="200.0" progress="0.0" />
    </children>
 </AnchorPane>
