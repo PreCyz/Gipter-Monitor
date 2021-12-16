@@ -1,9 +1,14 @@
 package pg.gipter.monitor.ui.details;
 
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
@@ -15,7 +20,9 @@ import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 
-import java.net.URL;
+import java.awt.*;
+import java.io.IOException;
+import java.net.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
@@ -63,6 +70,10 @@ public class DetailsController extends AbstractController {
     private Button saveButton;
     @FXML
     private Button cancelButton;
+    @FXML
+    private Button emailButton;
+    @FXML
+    private ProgressBar progressBar;
 
     private SimpleObjectProperty<ActiveSupportDetails> selectedValue;
     private final DateTimeFormatter YYYY_MM_DD_HH_MM = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -165,6 +176,10 @@ public class DetailsController extends AbstractController {
         cancelButton.setOnAction(getCancelButtonAction());
         saveButton.setDisable(selectedValue.getValue().isProcessed());
         saveButton.setOnAction(getSaveButtonAction());
+        emailButton.setOnAction(sendEmailButtonAction());
+
+        progressBar.setVisible(false);
+        progressBar.setProgress(ProgressBar.INDETERMINATE_PROGRESS);
     }
 
     private Tooltip createTooltip(String text) {
@@ -185,26 +200,87 @@ public class DetailsController extends AbstractController {
 
     private EventHandler<ActionEvent> getSaveButtonAction() {
         return event -> {
-            if (processedCheckBox.isSelected()) {
-                ActiveSupportDetails activeSupportDetails = selectedValue.getValue();
-                activeSupportDetails.setProcessDateTime(LocalDateTime.now());
-                activeSupportDetails.setUserProcessor(System.getProperty("user.name"));
-                selectedValue.setValue(activeSupportDetails);
+            progressBar.setVisible(true);
+            Task<Void> task = new Task<>() {
+                @Override
+                protected Void call() throws Exception {
+                    if (processedCheckBox.isSelected()) {
+                        saveButton.setDisable(true);
+                        ActiveSupportDetails activeSupportDetails = selectedValue.getValue();
+                        activeSupportDetails.setProcessDateTime(LocalDateTime.now());
+                        activeSupportDetails.setUserProcessor(System.getProperty("user.name"));
+                        selectedValue.setValue(activeSupportDetails);
 
-                ActiveSupportService activeSupportService = new ActiveSupportService();
-                activeSupportService.save(selectedValue.getValue().getActiveSupport());
+                        ActiveSupportService activeSupportService = new ActiveSupportService();
+                        activeSupportService.save(selectedValue.getValue().getActiveSupport());
 
-                StatisticService service = new StatisticService();
-                service.setProcessed(new ProcessingDetails(
-                        selectedValue.getValue().getStatisticId(),
-                        selectedValue.getValue().getExceptionDetails())
-                );
-                processedCheckBox.setDisable(true);
-                saveButton.setDisable(true);
+                        StatisticService service = new StatisticService();
+                        service.setProcessed(new ProcessingDetails(
+                                selectedValue.getValue().getStatisticId(),
+                                selectedValue.getValue().getExceptionDetails())
+                        );
+                        processedCheckBox.setDisable(true);
+                        saveButton.setDisable(true);
+                    } else {
+                        log.info("Record not selected to process.");
+                    }
+                    return null;
+                }
+            };
+
+            task.setOnSucceeded(evt -> Platform.runLater(() -> progressBar.setVisible(false)));
+
+            new Thread(task).start();
+        };
+    }
+
+    private EventHandler<ActionEvent> sendEmailButtonAction() {
+        return event -> {
+            Desktop desktop;
+            if (Desktop.isDesktopSupported()
+                    && (desktop = Desktop.getDesktop()).isSupported(Desktop.Action.MAIL)) {
+
+                String email = "mailTo:" + selectedValue.getValue().getUsername() + "@netcompany.com";
+                email += "?subject=" + uriEncode("Gipter Active Support");
+                email += "&body=" + uriEncode("TBD");
+
+                try {
+                    URI mailto = new URI(email);
+                    desktop.mail(mailto);
+                } catch (IOException | URISyntaxException e) {
+                    e.printStackTrace();
+                }
             } else {
-                log.info("Record not selected to process.");
+                String email = "mailTo:" + selectedValue.getValue().getUsername() + "@netcompany.com";
+                email += "\\?subject=" + uriEncode("Gipter Active Support");
+                email += "\\&body=" + uriEncode("TBD");
+
+                String cmd = "";
+                String os = System.getProperty("os.name").toLowerCase();
+                if (os.contains("win")) {
+                    cmd = "cmd.exe /c start " + email;
+                } else if (os.contains("osx")) {
+                    cmd = "open " + email;
+                } else if (os.contains("nix") || os.contains("aix") || os.contains("nux")) {
+                    cmd = "xdg-open " + email;
+                }
+                ProcessBuilder processBuilder = new ProcessBuilder();
+                processBuilder.command(cmd);
+                try {
+                    processBuilder.start();
+                } catch (IOException e) {
+                    log.error("Can not send email.", e);
+                }
             }
         };
+    }
+
+    private static String uriEncode(String in) {
+        StringBuilder out = new StringBuilder();
+        for (char ch : in.toCharArray()) {
+            out.append(Character.isLetterOrDigit(ch) ? ch : String.format("%%%02X", (int) ch));
+        }
+        return out.toString();
     }
 
 }
