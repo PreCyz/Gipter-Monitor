@@ -6,7 +6,7 @@
     </appender>
 
     <appender name="GIPTER-MONITOR" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>./logs/gipter.log</file>
+        <file>./logs/gm.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <charset>UTF-8</charset>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5level] [%thread] %-30.30logger: %msg%n</pattern>
@@ -17,24 +17,24 @@
     </appender>
 
     <appender name="QUARTZ" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>./logs/quartz-job.log</file>
+        <file>./logs/gm-quartz-job.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <charset>UTF-8</charset>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5level] [%thread] %-30.30logger: %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>./logs/quartz-job-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>./logs/gm-quartz-job-%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
     </appender>
 
     <appender name="MONGODB" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>./logs/mongodb.log</file>
+        <file>./logs/gm-gongodb.log</file>
         <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <charset>UTF-8</charset>
             <pattern>%d{yyyy-MM-dd HH:mm:ss} [%-5level] [%thread] %-30.30logger: %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>./logs/mongodb-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>./logs/gm-mongodb-%d{yyyy-MM-dd}.log</fileNamePattern>
         </rollingPolicy>
     </appender>
 
