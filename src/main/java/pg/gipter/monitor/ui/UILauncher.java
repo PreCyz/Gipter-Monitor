@@ -148,7 +148,7 @@ public class UILauncher implements Launcher {
     }
 
     private void initTray() {
-        if (false && isTrayActivated()) {
+        if (isTrayActivated()) {
             initTrayHandler();
         } else {
             setMainOnCloseRequest(AbstractController.regularOnCloseEventHandler());

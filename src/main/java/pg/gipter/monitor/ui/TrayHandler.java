@@ -74,7 +74,7 @@ public class TrayHandler {
 
     private Image createTrayImage() {
         Optional<URL> imageURL = ResourceUtils.getImgResource(ImageFile.MINION_TRAY.fileUrl());
-        String description = "Tray icon";
+        String description = "Minion-Monitor";
         return new ImageIcon(imageURL.get(), description).getImage();
     }
 
