@@ -136,5 +136,10 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </TitledPane>
+      <Button fx:id="exitButton" layoutX="1238.0" layoutY="751.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="Exit" textFill="#ff6404">
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

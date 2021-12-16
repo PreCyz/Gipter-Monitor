@@ -60,6 +60,8 @@ public class MainController extends AbstractController {
     private TableView<ActiveSupportDetails> unauthorizedTableView;
     @FXML
     private TabPane mainTabPane;
+    @FXML
+    private Button exitButton;
 
     private StatisticService statisticService;
 
@@ -309,6 +311,7 @@ public class MainController extends AbstractController {
         processButton.setDisable(true);
         mainTabPane.setOnMouseClicked(getTabPaneClickAction());
         processButton.setOnAction(getProcessButtonAction());
+        exitButton.setOnAction(event -> Platform.exit());
     }
 
     private EventHandler<ActionEvent> getStatisticsEventHandler() {
