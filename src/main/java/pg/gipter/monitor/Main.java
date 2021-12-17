@@ -28,7 +28,7 @@ public class Main extends Application {
         mObj.setLoggerLevel("INFO");
         logger.info("Java version '{}'.", SystemUtils.javaVersion());
         logger.info("Version of application '{}'.", VersionService.getInstance().getVersion());
-        logger.info("Gipter-Monitor can use '{}' threads.", Runtime.getRuntime().availableProcessors());
+        logger.info("Gipter-Monitor can use '{}' threads.", SystemUtils.availableProcessors());
         launch(args);
     }
 
@@ -52,8 +52,7 @@ public class Main extends Application {
     private void setLoggerLevel(String loggerLevel) {
         if (!StringUtils.nullOrEmpty(loggerLevel)) {
             Set<String> loggers = Stream.of(
-                    "pg.gipter",
-                    "org.springframework",
+                    "pg.gipter.monitor",
                     "org.mongodb",
                     "org.quartz"
             ).collect(toSet());

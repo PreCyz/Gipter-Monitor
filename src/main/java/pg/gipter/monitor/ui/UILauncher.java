@@ -13,8 +13,7 @@ import pg.gipter.monitor.launchers.Launcher;
 import pg.gipter.monitor.services.StartupService;
 import pg.gipter.monitor.services.VersionService;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
-import pg.gipter.monitor.utils.BundleUtils;
-import pg.gipter.monitor.utils.StringUtils;
+import pg.gipter.monitor.utils.*;
 
 import java.awt.*;
 import java.io.IOException;
@@ -36,7 +35,7 @@ public class UILauncher implements Launcher {
 
     public UILauncher(Stage mainWindow) {
         this.mainWindow = mainWindow;
-        this.executor = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+        this.executor = Executors.newFixedThreadPool(SystemUtils.availableProcessors());
         currentActiveSupport = new SimpleObjectProperty<>();
     }
 

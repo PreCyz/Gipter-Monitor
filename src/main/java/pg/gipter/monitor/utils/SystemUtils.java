@@ -16,6 +16,10 @@ public final class SystemUtils {
         return OS_LOWER_CASE.contains("mac");
     }
 
+    public static boolean isOsx() {
+        return OS_LOWER_CASE.contains("osx");
+    }
+
     public static boolean isUnix() {
         return OS_LOWER_CASE.contains("nix") || OS.contains("nux") || OS.contains("aix");
     }
@@ -44,4 +48,7 @@ public final class SystemUtils {
         return System.getProperty("os.name");
     }
 
+    public static int availableProcessors() {
+        return Runtime.getRuntime().availableProcessors();
+    }
 }

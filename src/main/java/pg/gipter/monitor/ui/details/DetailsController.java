@@ -21,6 +21,7 @@ import pg.gipter.monitor.domain.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
+import pg.gipter.monitor.utils.SystemUtils;
 import pg.gipter.monitor.utils.ThreadUtils;
 
 import java.awt.*;
@@ -267,12 +268,12 @@ public class DetailsController extends AbstractController {
                 email += "\\&body=" + uriEncode("TBD");
 
                 String cmd = "";
-                String os = System.getProperty("os.name").toLowerCase();
-                if (os.contains("win")) {
+
+                if (SystemUtils.isWindows()) {
                     cmd = "cmd.exe /c start " + email;
-                } else if (os.contains("osx")) {
+                } else if (SystemUtils.isOsx()) {
                     cmd = "open " + email;
-                } else if (os.contains("nix") || os.contains("aix") || os.contains("nux")) {
+                } else if (SystemUtils.isUnix()) {
                     cmd = "xdg-open " + email;
                 }
                 ProcessBuilder processBuilder = new ProcessBuilder();

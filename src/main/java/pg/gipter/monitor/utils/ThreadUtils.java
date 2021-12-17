@@ -13,7 +13,7 @@ public final class ThreadUtils {
 
     private static ExecutorService getExecutorService() {
         if (executorService == null) {
-            executorService = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors());
+            executorService = Executors.newFixedThreadPool(SystemUtils.availableProcessors());
         }
         return executorService;
     }
