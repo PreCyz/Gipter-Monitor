@@ -18,6 +18,7 @@ import pg.gipter.monitor.utils.*;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -183,5 +184,9 @@ public class UILauncher implements Launcher {
 
     public void displayNotificationMessage(String message) {
         trayHandler.displayMessage(message);
+    }
+
+    public void updateTables(List<ActiveSupportDetails> failedTries) {
+
     }
 }

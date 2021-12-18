@@ -17,12 +17,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
+import org.quartz.SchedulerException;
 import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
 import pg.gipter.monitor.domain.activeSupports.dto.ProcessingDetails;
 import pg.gipter.monitor.domain.activeSupports.services.ActiveSupportService;
 import pg.gipter.monitor.domain.statistics.collections.RunType;
 import pg.gipter.monitor.domain.statistics.services.StatisticService;
-import pg.gipter.monitor.services.StartupService;
+import pg.gipter.monitor.services.*;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
@@ -69,10 +70,15 @@ public class MainController extends AbstractController {
     @FXML
     private ProgressBar progressBar;
     @FXML
-    private CheckBox autostartCheckbox;
+    private CheckBox autostartCheckBox;
+    @FXML
+    private CheckBox runSchedulerCheckBox;
+    @FXML
+    private ComboBox<Crons> cronComboBox;
 
-    private StatisticService statisticService;
-    private StartupService startupService;
+    private final StatisticService statisticService;
+    private final StartupService startupService;
+    private final JobService jobService;
 
     private SimpleObjectProperty<ActiveSupportDetails> selectedValue;
     private SimpleStringProperty diffStringProperty;
@@ -89,6 +95,7 @@ public class MainController extends AbstractController {
         UNAUTHORIZED("Unauthorized: ");
 
         private final String text;
+
         Summary(String text) {
             this.text = text;
         }
@@ -104,6 +111,7 @@ public class MainController extends AbstractController {
         super(uiLauncher);
         statisticService = new StatisticService();
         startupService = new StartupService();
+        jobService = new JobService(this);
     }
 
     @Override
@@ -125,7 +133,10 @@ public class MainController extends AbstractController {
         unauthorizedStringProperty = new SimpleStringProperty(summaryMap.get(Summary.UNAUTHORIZED));
         importantStringProperty = new SimpleStringProperty(summaryMap.get(Summary.IMPORTANT));
         totalStringProperty = new SimpleStringProperty(summaryMap.get(Summary.TOTAL));
-        autostartCheckbox.setSelected(startupService.isStartOnStartupActive());
+        boolean startOnStartupActive = startupService.isStartOnStartupActive();
+        autostartCheckBox.setSelected(startOnStartupActive);
+        cronComboBox.setItems(FXCollections.observableList(Arrays.asList(Crons.values())));
+        cronComboBox.setValue(Crons.values()[0]);
     }
 
     private ChangeListener<ActiveSupportDetails> getSelectedValueChangeListener() {
@@ -324,7 +335,8 @@ public class MainController extends AbstractController {
         processButton.setOnAction(getProcessButtonAction());
         exitButton.setOnAction(event -> Platform.exit());
         progressBar.setVisible(false);
-        autostartCheckbox.selectedProperty().addListener(getAutostartChangeListener());
+        autostartCheckBox.selectedProperty().addListener(getAutostartChangeListener());
+        runSchedulerCheckBox.selectedProperty().addListener(getRunSchedulerChangeListener());
     }
 
     private EventHandler<ActionEvent> getStatisticsEventHandler() {
@@ -400,10 +412,10 @@ public class MainController extends AbstractController {
                 protected Void call() {
                     ObservableList<ActiveSupportDetails> selectedItems;
                     switch (mainTabPane.getSelectionModel().getSelectedIndex()) {
-                        case 0 :
+                        case 0:
                             selectedItems = diffTableView.getSelectionModel().getSelectedItems();
                             break;
-                        case 1 :
+                        case 1:
                             selectedItems = unauthorizedTableView.getSelectionModel().getSelectedItems();
                             break;
                         default:
@@ -455,6 +467,29 @@ public class MainController extends AbstractController {
                 startupService.startOnStartup();
             } else {
                 startupService.disableStartOnStartup();
+            }
+        };
+    }
+
+    public void updateTables(List<ActiveSupportDetails> newData) {
+        failedTries = newData;
+        Platform.runLater(() -> {
+            groupByFilters(failedTries);
+            uiLauncher.displayNotificationMessage(String.format("%d new exceptions downloaded.", failedTries.size()));
+        });
+    }
+
+    private ChangeListener<Boolean> getRunSchedulerChangeListener() {
+        return (observable, oldValue, newValue) -> {
+            try {
+                if (newValue) {
+                    jobService.setCrons(cronComboBox.getValue());
+                    jobService.scheduleJob();
+                } else {
+                    jobService.deleteJob();
+                }
+            } catch (SchedulerException e) {
+                log.error("Problem with the job.", e);
             }
         };
     }

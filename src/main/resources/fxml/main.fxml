@@ -142,11 +142,13 @@
          </font>
       </Button>
       <ProgressBar fx:id="progressBar" layoutX="389.0" layoutY="29.0" prefWidth="200.0" progress="0.0" />
-      <TitledPane animated="false" layoutX="590.0" layoutY="610.0" prefHeight="76.0" prefWidth="202.0" text="%main.config" textFill="#21a83a">
+      <TitledPane animated="false" layoutX="590.0" layoutY="610.0" prefHeight="174.0" prefWidth="202.0" text="%main.config" textFill="#21a83a">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="176.0" prefWidth="200.0">
                <children>
-                  <CheckBox fx:id="autostartCheckbox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="%main.autostart" />
+                  <CheckBox fx:id="autostartCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="%main.autostart" />
+                  <CheckBox fx:id="runSchedulerCheckBox" layoutX="14.0" layoutY="48.0" mnemonicParsing="false" text="%main.runScheduler" />
+                  <ComboBox fx:id="cronComboBox" layoutX="14.0" layoutY="82.0" prefHeight="27.0" prefWidth="174.0" />
                </children>
             </AnchorPane>
         </content>
