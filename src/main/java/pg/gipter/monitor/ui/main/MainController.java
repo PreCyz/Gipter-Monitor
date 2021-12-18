@@ -22,6 +22,7 @@ import pg.gipter.monitor.domain.activeSupports.dto.ProcessingDetails;
 import pg.gipter.monitor.domain.activeSupports.services.ActiveSupportService;
 import pg.gipter.monitor.domain.statistics.collections.RunType;
 import pg.gipter.monitor.domain.statistics.services.StatisticService;
+import pg.gipter.monitor.services.StartupService;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
@@ -67,8 +68,11 @@ public class MainController extends AbstractController {
     private Button exitButton;
     @FXML
     private ProgressBar progressBar;
+    @FXML
+    private CheckBox autostartCheckbox;
 
     private StatisticService statisticService;
+    private StartupService startupService;
 
     private SimpleObjectProperty<ActiveSupportDetails> selectedValue;
     private SimpleStringProperty diffStringProperty;
@@ -98,6 +102,8 @@ public class MainController extends AbstractController {
 
     public MainController(UILauncher uiLauncher) {
         super(uiLauncher);
+        statisticService = new StatisticService();
+        startupService = new StartupService();
     }
 
     @Override
@@ -111,7 +117,6 @@ public class MainController extends AbstractController {
     }
 
     private void initValues() {
-        statisticService = new StatisticService();
         selectedValue = new SimpleObjectProperty<>();
         selectedValue.addListener(getSelectedValueChangeListener());
         uiLauncher.bind(selectedValue);
@@ -120,6 +125,7 @@ public class MainController extends AbstractController {
         unauthorizedStringProperty = new SimpleStringProperty(summaryMap.get(Summary.UNAUTHORIZED));
         importantStringProperty = new SimpleStringProperty(summaryMap.get(Summary.IMPORTANT));
         totalStringProperty = new SimpleStringProperty(summaryMap.get(Summary.TOTAL));
+        autostartCheckbox.setSelected(startupService.isStartOnStartupActive());
     }
 
     private ChangeListener<ActiveSupportDetails> getSelectedValueChangeListener() {
@@ -318,6 +324,7 @@ public class MainController extends AbstractController {
         processButton.setOnAction(getProcessButtonAction());
         exitButton.setOnAction(event -> Platform.exit());
         progressBar.setVisible(false);
+        autostartCheckbox.selectedProperty().addListener(getAutostartChangeListener());
     }
 
     private EventHandler<ActionEvent> getStatisticsEventHandler() {
@@ -438,6 +445,16 @@ public class MainController extends AbstractController {
                 log.error("Something went wrong", e);
             }
 
+        };
+    }
+
+    private ChangeListener<Boolean> getAutostartChangeListener() {
+        return (observable, oldValue, newValue) -> {
+            if (newValue) {
+                startupService.startOnStartup();
+            } else {
+                startupService.disableStartOnStartup();
+            }
         };
     }
 }

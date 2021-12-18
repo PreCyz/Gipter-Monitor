@@ -7,11 +7,11 @@
 <AnchorPane prefHeight="795.0" prefWidth="1322.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <DatePicker fx:id="fromDatePicker" layoutX="14.0" layoutY="25.0" promptText="Date from" />
-      <Button fx:id="getStatisticsButton" layoutX="211.0" layoutY="23.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="GET" textFill="#0004ff">
+      <Button fx:id="getStatisticsButton" layoutX="211.0" layoutY="23.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="%main.get" textFill="#0004ff">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Button>
-      <Button fx:id="processButton" layoutX="306.0" layoutY="23.0" mnemonicParsing="false" text="Process" textFill="#ff6404">
+      <Button fx:id="processButton" layoutX="306.0" layoutY="23.0" mnemonicParsing="false" text="%main.process" textFill="#ff6404">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -24,15 +24,15 @@
                      <children>
                         <TableView fx:id="diffTableView" layoutX="3.0" layoutY="2.0" prefHeight="496.0" prefWidth="1316.0">
                            <columns>
-                              <TableColumn prefWidth="65.0" text="User" />
-                              <TableColumn prefWidth="43.0" text="Gipter" />
-                              <TableColumn prefWidth="50.0" text="JVM" />
-                              <TableColumn prefWidth="35.0" text="VCS" />
-                              <TableColumn prefWidth="112.0" text="RunType" />
-                              <TableColumn prefWidth="103.0" text="SuccessDate" />
-                              <TableColumn prefWidth="103.0" text="FailDate" />
-                              <TableColumn prefWidth="103.0" text="ErrorDate" />
-                              <TableColumn prefWidth="690.0" text="Cause" />
+                              <TableColumn prefWidth="65.0" text="%main.table.column.user" />
+                              <TableColumn prefWidth="43.0" text="%main.table.column.gipter" />
+                              <TableColumn prefWidth="50.0" text="%main.table.column.jvm" />
+                              <TableColumn prefWidth="35.0" text="%main.table.column.vcs" />
+                              <TableColumn prefWidth="112.0" text="%main.table.column.runType" />
+                              <TableColumn prefWidth="103.0" text="%main.table.column.successDate" />
+                              <TableColumn prefWidth="103.0" text="%main.table.column.failDate" />
+                              <TableColumn prefWidth="103.0" text="%main.table.column.errorDate" />
+                              <TableColumn prefWidth="690.0" text="%main.table.column.cause" />
                            </columns>
                         </TableView>
                      </children>
@@ -136,11 +136,20 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </TitledPane>
-      <Button fx:id="exitButton" layoutX="1238.0" layoutY="751.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="Exit" textFill="#ff6404">
+      <Button fx:id="exitButton" layoutX="1238.0" layoutY="751.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%main.exit" textFill="#ff6404">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
       <ProgressBar fx:id="progressBar" layoutX="389.0" layoutY="29.0" prefWidth="200.0" progress="0.0" />
+      <TitledPane animated="false" layoutX="1027.0" layoutY="610.0" prefHeight="171.0" prefWidth="202.0" text="%main.config">
+        <content>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="176.0" prefWidth="200.0">
+               <children>
+                  <CheckBox fx:id="autostartCheckbox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="%main.autostart" />
+               </children>
+            </AnchorPane>
+        </content>
+      </TitledPane>
    </children>
 </AnchorPane>

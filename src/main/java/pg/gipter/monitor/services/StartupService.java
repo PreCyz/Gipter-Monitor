@@ -1,5 +1,6 @@
 package pg.gipter.monitor.services;
 
+import lombok.NoArgsConstructor;
 import mslinks.ShellLink;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -10,34 +11,31 @@ import pg.gipter.monitor.utils.SystemUtils;
 import java.io.IOException;
 import java.nio.file.*;
 
+@NoArgsConstructor
 public class StartupService {
 
     private static final Logger logger = LoggerFactory.getLogger(StartupService.class);
-    private final String systemUsername;
-
-    public StartupService() {
-        systemUsername = SystemUtils.userName();
-    }
+    private static final Path shortcutLnkPath = Paths.get(
+            "C:",
+            "Users",
+            SystemUtils.userName(),
+            "AppData",
+            "Roaming",
+            "Microsoft",
+            "Windows",
+            "Start Menu",
+            "Programs",
+            "Startup",
+            "Gipter-Monitor.lnk"
+    );
 
     public void startOnStartup() {
         if (SystemUtils.isWindows()) {
-            Path shortcutLnkPath = Paths.get(
-                    "C:",
-                    "Users",
-                    systemUsername,
-                    "AppData",
-                    "Roaming",
-                    "Microsoft",
-                    "Windows",
-                    "Start Menu",
-                    "Programs",
-                    "Startup",
-                    "Gipter-Monitor.lnk"
-            );
-
             Path target = JarHelper.getJarPath().orElseGet(() -> Paths.get(""));
-            if (!Files.exists(shortcutLnkPath)) {
-                logger.info("Creating shortcut to [{}] and placing it in Windows startup folder. [{}]", target, shortcutLnkPath);
+            if (!isStartOnStartupActive()) {
+                logger.info("Creating shortcut to [{}] and placing it in Windows startup folder. [{}]",
+                        target, shortcutLnkPath
+                );
                 try {
                     String workingDir = JarHelper.homeDirectoryPath().orElse("");
 
@@ -63,20 +61,7 @@ public class StartupService {
 
     public void disableStartOnStartup() {
         if (SystemUtils.isWindows()) {
-            Path shortcutLnkPath = Paths.get(
-                    "C:",
-                    "Users",
-                    systemUsername,
-                    "AppData",
-                    "Roaming",
-                    "Microsoft",
-                    "Windows",
-                    "Start Menu",
-                    "Programs",
-                    "Startup",
-                    "Gipter-Monitor.lnk"
-            );
-            if (Files.exists(shortcutLnkPath) && Files.isRegularFile(shortcutLnkPath)) {
+            if (isStartOnStartupActive()) {
                 try {
                     FileUtils.forceDelete(shortcutLnkPath.toFile());
                     logger.info("Deletion of link done: [{}]", shortcutLnkPath);
@@ -85,5 +70,9 @@ public class StartupService {
                 }
             }
         }
+    }
+
+    public boolean isStartOnStartupActive() {
+        return Files.exists(shortcutLnkPath) && Files.isRegularFile(shortcutLnkPath);
     }
 }
