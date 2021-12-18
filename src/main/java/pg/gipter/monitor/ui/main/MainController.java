@@ -346,6 +346,7 @@ public class MainController extends AbstractController {
                 groupByFilters(failedTries);
                 getStatisticsButton.setDisable(false);
                 progressBar.setProgress(1d);
+                uiLauncher.displayNotificationMessage(String.format("%d new exceptions downloaded.", failedTries.size()));
             }));
 
             try {

@@ -180,4 +180,8 @@ public class UILauncher implements Launcher {
     public void closeDetailsWindow() {
         detailsWindow.close();
     }
+
+    public void displayNotificationMessage(String message) {
+        trayHandler.displayMessage(message);
+    }
 }

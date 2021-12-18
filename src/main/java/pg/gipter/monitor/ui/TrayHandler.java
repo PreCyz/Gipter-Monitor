@@ -127,4 +127,8 @@ public class TrayHandler {
     boolean tryIconExists() {
         return trayIcon != null;
     }
+
+    public void displayMessage(String message) {
+        trayIcon.displayMessage("Gipter-Monitor", message, TrayIcon.MessageType.INFO);
+    }
 }
