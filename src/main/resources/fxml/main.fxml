@@ -142,7 +142,7 @@
          </font>
       </Button>
       <ProgressBar fx:id="progressBar" layoutX="389.0" layoutY="29.0" prefWidth="200.0" progress="0.0" />
-      <TitledPane animated="false" layoutX="1027.0" layoutY="610.0" prefHeight="171.0" prefWidth="202.0" text="%main.config">
+      <TitledPane animated="false" layoutX="590.0" layoutY="610.0" prefHeight="76.0" prefWidth="202.0" text="%main.config" textFill="#21a83a">
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="176.0" prefWidth="200.0">
                <children>
@@ -150,6 +150,9 @@
                </children>
             </AnchorPane>
         </content>
+         <font>
+            <Font name="System Bold" size="14.0" />
+         </font>
       </TitledPane>
    </children>
 </AnchorPane>

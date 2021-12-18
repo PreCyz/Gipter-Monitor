@@ -21,10 +21,11 @@ import pg.gipter.monitor.domain.statistics.services.StatisticService;
 import pg.gipter.monitor.ui.AbstractController;
 import pg.gipter.monitor.ui.UILauncher;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
-import pg.gipter.monitor.utils.SystemUtils;
-import pg.gipter.monitor.utils.ThreadUtils;
+import pg.gipter.monitor.utils.*;
 
 import java.awt.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.net.*;
 import java.time.LocalDateTime;
@@ -81,7 +82,8 @@ public class DetailsController extends AbstractController {
     private ProgressBar progressBar;
 
     private SimpleObjectProperty<ActiveSupportDetails> selectedValue;
-    private final DateTimeFormatter YYYY_MM_DD_HH_MM = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+    private Label copiedLabel;
+    private static final DateTimeFormatter YYYY_MM_DD_HH_MM = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     public DetailsController(UILauncher uiLauncher) {
         super(uiLauncher);
@@ -159,21 +161,37 @@ public class DetailsController extends AbstractController {
 
     private void setProperties() {
         statisticIdLabel.setTooltip(createTooltip("Statistic ID"));
+        setOnClickAction(statisticIdLabel);
         usernameLabel.setTooltip(createTooltip("Username"));
+        setOnClickAction(usernameLabel);
         firstExecutionDateLabel.setTooltip(createTooltip("First execution date"));
+        setOnClickAction(firstExecutionDateLabel);
         lastExecutionDateLabel.setTooltip(createTooltip("Last execution date"));
+        setOnClickAction(lastExecutionDateLabel);
         lastSuccessDateLabel.setTooltip(createTooltip("Last success date"));
+        setOnClickAction(lastSuccessDateLabel);
         lastFailedDateLabel.setTooltip(createTooltip("Last failed date"));
+        setOnClickAction(lastFailedDateLabel);
         javaVersionLabel.setTooltip(createTooltip("Java version"));
+        setOnClickAction(javaVersionLabel);
         lastUpdateStatusLabel.setTooltip(createTooltip("Last update status"));
+        setOnClickAction(lastUpdateStatusLabel);
         lastRunTypeLabel.setTooltip(createTooltip("Last rune type"));
+        setOnClickAction(lastRunTypeLabel);
         controlSystemMapLabel.setTooltip(createTooltip("VCS"));
+        setOnClickAction(controlSystemMapLabel);
         applicationVersionLabel.setTooltip(createTooltip("Application version"));
+        setOnClickAction(applicationVersionLabel);
         errorMsgLabel.setTooltip(createTooltip("Error message"));
+        setOnClickAction(errorMsgLabel);
         causeLabel.setTooltip(createTooltip("Cause"));
+        setOnClickAction(causeLabel);
         errorDateLabel.setTooltip(createTooltip("Error date"));
+        setOnClickAction(errorDateLabel);
         processDateTimeLabel.setTooltip(createTooltip("Process date"));
+        setOnClickAction(processDateTimeLabel);
         userProcessorLabel.setTooltip(createTooltip("User processor"));
+        setOnClickAction(usernameLabel);
         commentTextArea.setTooltip(createTooltip("Comment"));
 
         processedCheckBox.setDisable(selectedValue.get().isProcessed());
@@ -287,12 +305,39 @@ public class DetailsController extends AbstractController {
         };
     }
 
-    private static String uriEncode(String in) {
+    private String uriEncode(String in) {
         StringBuilder out = new StringBuilder();
         for (char ch : in.toCharArray()) {
             out.append(Character.isLetterOrDigit(ch) ? ch : String.format("%%%02X", (int) ch));
         }
         return out.toString();
+    }
+
+    private void setOnClickAction(Label label) {
+        label.setOnMouseClicked(event -> {
+            addTextToClipboard(label.getText());
+            changeTextColor(label);
+        });
+    }
+
+    private void addTextToClipboard(String text) {
+        if (text != null && !text.isEmpty()) {
+            StringSelection stringSelection = new StringSelection(text);
+            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+            clipboard.setContents(stringSelection, null);
+        }
+    }
+
+    private void changeTextColor(Label label) {
+        Optional<URL> cssResource = ResourceUtils.getCssResource("labels.css");
+        if (cssResource.isPresent()) {
+            if (copiedLabel != null) {
+                copiedLabel.getStylesheets().clear();
+            }
+            label.getStylesheets().clear();
+            label.getStylesheets().add(cssResource.get().toExternalForm());
+            copiedLabel = label;
+        }
     }
 
 }
