@@ -330,10 +330,13 @@ public class MainController extends AbstractController {
         importantLabel.textProperty().bindBidirectional(importantStringProperty);
         importantLabel.setOnMouseClicked(getLabelOnClickAction(2));
         totalLabel.textProperty().bindBidirectional(totalStringProperty);
-        processButton.setDisable(true);
         mainTabPane.setOnMouseClicked(getTabPaneClickAction());
+        processButton.setDisable(true);
         processButton.setOnAction(getProcessButtonAction());
-        exitButton.setOnAction(event -> Platform.exit());
+        exitButton.setOnAction(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
         progressBar.setVisible(false);
         autostartCheckBox.selectedProperty().addListener(getAutostartChangeListener());
         runSchedulerCheckBox.selectedProperty().addListener(getRunSchedulerChangeListener());
