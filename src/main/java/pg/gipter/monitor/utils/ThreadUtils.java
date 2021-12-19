@@ -21,4 +21,16 @@ public final class ThreadUtils {
     public static void submit(Task<?> callable) throws ExecutionException, InterruptedException {
         getExecutorService().submit(callable);
     }
+
+    public static <V> Future<V> submit(Callable<V> callable) {
+        return getExecutorService().submit(callable);
+    }
+
+    public static void submit(Runnable runnable) {
+        getExecutorService().submit(runnable, null);
+    }
+
+    private static <T> Future<T> submit(Runnable runnable, T result) {
+        return getExecutorService().submit(runnable, result);
+    }
 }

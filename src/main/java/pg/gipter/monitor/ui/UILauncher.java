@@ -13,14 +13,13 @@ import pg.gipter.monitor.launchers.Launcher;
 import pg.gipter.monitor.services.StartupService;
 import pg.gipter.monitor.services.VersionService;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
-import pg.gipter.monitor.utils.*;
+import pg.gipter.monitor.utils.BundleUtils;
+import pg.gipter.monitor.utils.StringUtils;
 
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 /** Created by Gawa 2017-10-04 */
 public class UILauncher implements Launcher {
@@ -30,26 +29,16 @@ public class UILauncher implements Launcher {
     private final Stage mainWindow;
     private Stage detailsWindow;
     private TrayHandler trayHandler;
-    private final Executor executor;
     @Getter
     private final SimpleObjectProperty<ActiveSupportDetails> currentActiveSupport;
 
     public UILauncher(Stage mainWindow) {
         this.mainWindow = mainWindow;
-        this.executor = Executors.newFixedThreadPool(SystemUtils.availableProcessors());
         currentActiveSupport = new SimpleObjectProperty<>();
     }
 
-    public void executeOutsideUIThread(Runnable runnable) {
-        executor.execute(runnable);
-    }
-
-    public Executor nonUIExecutor() {
-        return executor;
-    }
-
     public void initTrayHandler() {
-        trayHandler = new TrayHandler(this, executor);
+        trayHandler = new TrayHandler(this);
         if (trayHandler.tryIconExists()) {
             logger.info("Updating tray icon.");
             trayHandler.updateTrayLabels();
@@ -108,10 +97,6 @@ public class UILauncher implements Launcher {
         } catch (IOException ex) {
             logger.error("Building scene error.", ex);
         }
-    }
-
-    public Stage currentWindow() {
-        return mainWindow;
     }
 
     private Image readImage(String imgPath) throws IOException {

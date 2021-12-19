@@ -6,15 +6,13 @@ import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pg.gipter.monitor.services.VersionService;
-import pg.gipter.monitor.utils.BundleUtils;
-import pg.gipter.monitor.utils.ResourceUtils;
+import pg.gipter.monitor.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.Optional;
-import java.util.concurrent.Executor;
 
 public class TrayHandler {
 
@@ -23,11 +21,9 @@ public class TrayHandler {
     private final UILauncher uiLauncher;
     private static TrayIcon trayIcon;
     private static PopupMenu trayPopupMenu;
-    private final Executor executor;
 
-    TrayHandler(UILauncher uiLauncher, Executor executor) {
+    TrayHandler(UILauncher uiLauncher) {
         this.uiLauncher = uiLauncher;
-        this.executor = executor;
     }
 
     void createTrayIcon() {
@@ -59,7 +55,7 @@ public class TrayHandler {
     }
 
     private void addMenuItemsToMenu(PopupMenu popupMenu) {
-        executor.execute(() -> {
+        ThreadUtils.submit(() -> {
             MenuItem showItem = new MenuItem(BundleUtils.getMsg("tray.item.show"));
             showItem.addActionListener(showActionListener());
             popupMenu.add(showItem);
