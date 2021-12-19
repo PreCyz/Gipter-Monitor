@@ -463,10 +463,16 @@ public class MainController extends AbstractController {
 
     private ChangeListener<Boolean> getAutostartChangeListener() {
         return (observable, oldValue, newValue) -> {
-            if (newValue) {
-                startupService.startOnStartup();
-            } else {
-                startupService.disableStartOnStartup();
+            if (uiLauncher.isTraySupported()) {
+                if (newValue) {
+                    if (uiLauncher.isTraySupported()) {
+                        log.info("Setting autostart on system startup.");
+                        startupService.startOnStartup();
+                    }
+                } else {
+                    log.info("Disabling autostart on system startup.");
+                    startupService.disableStartOnStartup();
+                }
             }
         };
     }

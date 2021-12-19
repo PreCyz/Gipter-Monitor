@@ -10,7 +10,6 @@ import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import pg.gipter.monitor.launchers.Launcher;
-import pg.gipter.monitor.services.StartupService;
 import pg.gipter.monitor.services.VersionService;
 import pg.gipter.monitor.ui.fxproperties.ActiveSupportDetails;
 import pg.gipter.monitor.utils.BundleUtils;
@@ -54,18 +53,8 @@ public class UILauncher implements Launcher {
             logger.info("Tray icon is not supported. Can't launch in silent mode. Program is terminated");
             Platform.exit();
         }
-        setStartOnStartup();
         initTray();
         buildAndShowMainWindow();
-    }
-
-    private void setStartOnStartup() {
-        logger.info("Checking if Gipter can be started on system startup.");
-        if (!isTraySupported()) {
-            logger.info("Tray not supported. Can not set start on startup.");
-            return;
-        }
-        new StartupService().startOnStartup();
     }
 
     public void buildAndShowMainWindow() {
