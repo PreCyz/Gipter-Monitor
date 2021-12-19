@@ -333,10 +333,7 @@ public class MainController extends AbstractController {
         mainTabPane.setOnMouseClicked(getTabPaneClickAction());
         processButton.setDisable(true);
         processButton.setOnAction(getProcessButtonAction());
-        exitButton.setOnAction(event -> {
-            Platform.exit();
-            System.exit(0);
-        });
+        exitButton.setOnAction(getExitButtonAction());
         progressBar.setVisible(false);
         autostartCheckBox.selectedProperty().addListener(getAutostartChangeListener());
         runSchedulerCheckBox.selectedProperty().addListener(getRunSchedulerChangeListener());
@@ -461,6 +458,13 @@ public class MainController extends AbstractController {
                 log.error("Something went wrong", e);
             }
 
+        };
+    }
+
+    private EventHandler<ActionEvent> getExitButtonAction() {
+        return event -> {
+            Platform.exit();
+            System.exit(0);
         };
     }
 
