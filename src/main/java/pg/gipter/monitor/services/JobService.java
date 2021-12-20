@@ -81,8 +81,17 @@ public class JobService {
         return jobKey;
     }
 
-    public boolean isSchedulerInitiated() {
+    private boolean isSchedulerInitiated() {
         return scheduler != null;
+    }
+
+    public boolean isJobExists() {
+        try {
+            return isSchedulerInitiated() && scheduler.checkExists(jobKey);
+        } catch (SchedulerException e) {
+            log.error("Can not determine if job was defined.", e);
+            return false;
+        }
     }
 
 }

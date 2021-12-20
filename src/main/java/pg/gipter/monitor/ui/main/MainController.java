@@ -135,6 +135,7 @@ public class MainController extends AbstractController {
         totalStringProperty = new SimpleStringProperty(summaryMap.get(Summary.TOTAL));
         boolean startOnStartupActive = startupService.isStartOnStartupActive();
         autostartCheckBox.setSelected(startOnStartupActive);
+        runSchedulerCheckBox.setSelected(jobService.isJobExists());
         cronComboBox.setItems(FXCollections.observableList(Arrays.asList(Crons.values())));
         cronComboBox.setValue(Crons.values()[0]);
     }
