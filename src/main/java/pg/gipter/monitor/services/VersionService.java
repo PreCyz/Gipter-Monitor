@@ -12,7 +12,7 @@ import java.util.Scanner;
 public class VersionService {
 
     private static class InstanceHolder {
-        public static final VersionService INSTANCE_HOLDER = new VersionService();
+        static final VersionService INSTANCE_HOLDER = new VersionService();
     }
 
     public static VersionService getInstance() {

@@ -18,8 +18,16 @@ public class StatisticService {
 
     private final StatisticDao statisticDao;
 
-    public StatisticService() {
+    private static class InstanceHolder {
+        static final StatisticService INSTANCE_HOLDER = new StatisticService();
+    }
+
+    private StatisticService() {
         statisticDao = StatisticDaoFactory.getStatisticDao();
+    }
+
+    public static StatisticService getInstance() {
+        return InstanceHolder.INSTANCE_HOLDER;
     }
 
     public List<ActiveSupportDetails> getFailedTries(final LocalDateTime localDateTime) {
@@ -32,7 +40,7 @@ public class StatisticService {
                 .collect(toList());
     }
 
-    public void setProcessed(ProcessingDetails processingDetails) {
+    public void saveProcessed(ProcessingDetails processingDetails) {
         log.info("Processing statistic with id [{}].", processingDetails.getStatisticId());
         log.info("Processing statistic with id [{}].", processingDetails.getStatisticId());
         statisticDao.saveProcessed(processingDetails);

@@ -17,7 +17,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
-import org.quartz.SchedulerException;
 import pg.gipter.monitor.domain.activeSupports.collections.ActiveSupport;
 import pg.gipter.monitor.domain.activeSupports.dto.ProcessingDetails;
 import pg.gipter.monitor.domain.activeSupports.services.ActiveSupportService;
@@ -109,9 +108,9 @@ public class MainController extends AbstractController {
 
     public MainController(UILauncher uiLauncher) {
         super(uiLauncher);
-        statisticService = new StatisticService();
-        startupService = new StartupService();
-        jobService = new JobService(this);
+        statisticService = StatisticService.getInstance();
+        startupService = StartupService.getInstance();
+        jobService = JobService.getInstance(this);
     }
 
     @Override
@@ -341,6 +340,7 @@ public class MainController extends AbstractController {
         progressBar.setVisible(false);
         autostartCheckBox.selectedProperty().addListener(getAutostartChangeListener());
         runSchedulerCheckBox.selectedProperty().addListener(getRunSchedulerChangeListener());
+        cronComboBox.valueProperty().addListener(getCronComboBoxChangeListener());
     }
 
     private EventHandler<ActionEvent> getStatisticsEventHandler() {
@@ -441,7 +441,6 @@ public class MainController extends AbstractController {
                             .map(asd -> new ProcessingDetails(asd.getStatisticId(), asd.getExceptionDetails()))
                             .collect(toList());
 
-                    StatisticService statisticService = new StatisticService();
                     statisticService.processAll(processingDetailsList);
 
                     LocalDateTime from = LocalDateTime.of(fromDatePicker.getValue(), LocalTime.now());
@@ -498,15 +497,21 @@ public class MainController extends AbstractController {
 
     private ChangeListener<Boolean> getRunSchedulerChangeListener() {
         return (observable, oldValue, newValue) -> {
-            try {
-                if (newValue) {
-                    jobService.setCrons(cronComboBox.getValue());
-                    jobService.scheduleJob();
-                } else {
-                    jobService.deleteJob();
-                }
-            } catch (SchedulerException e) {
-                log.error("Problem with the job.", e);
+            if (newValue) {
+                jobService.setCrons(cronComboBox.getValue());
+                jobService.scheduleJob();
+            } else {
+                jobService.deleteJob();
+            }
+        };
+    }
+
+    private ChangeListener<Crons> getCronComboBoxChangeListener() {
+        return (observable, oldValue, newValue) -> {
+            if (runSchedulerCheckBox.isSelected() && jobService.isJobExists()) {
+                jobService.deleteJob();
+                jobService.setCrons(newValue);
+                jobService.scheduleJob();
             }
         };
     }

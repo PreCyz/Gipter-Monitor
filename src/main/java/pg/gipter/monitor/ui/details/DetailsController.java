@@ -240,8 +240,9 @@ public class DetailsController extends AbstractController {
                         ActiveSupportService activeSupportService = new ActiveSupportService();
                         activeSupportService.save(activeSupport);
 
-                        StatisticService service = new StatisticService();
-                        service.setProcessed(new ProcessingDetails(activeSupport.getStatisticId(), exceptionDetails));
+                        StatisticService.getInstance().saveProcessed(
+                                new ProcessingDetails(activeSupport.getStatisticId(), exceptionDetails)
+                        );
 
                         return null;
                     }

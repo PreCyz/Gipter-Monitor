@@ -1,5 +1,6 @@
 package pg.gipter.monitor.services;
 
+import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import mslinks.ShellLink;
 import org.apache.commons.io.FileUtils;
@@ -11,7 +12,7 @@ import pg.gipter.monitor.utils.SystemUtils;
 import java.io.IOException;
 import java.nio.file.*;
 
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class StartupService {
 
     private static final Logger logger = LoggerFactory.getLogger(StartupService.class);
@@ -28,6 +29,14 @@ public class StartupService {
             "Startup",
             "Gipter-Monitor.lnk"
     );
+
+    private static class InstanceHolder {
+        static final StartupService INSTANCE_HOLDER = new StartupService();
+    }
+
+    public static StartupService getInstance() {
+        return InstanceHolder.INSTANCE_HOLDER;
+    }
 
     public void startOnStartup() {
         if (SystemUtils.isWindows()) {

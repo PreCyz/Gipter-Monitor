@@ -13,7 +13,7 @@ import java.util.List;
 @Slf4j
 public class GetStatisticsJob implements Job {
 
-    public static final String NAME = GetStatisticsJob.class.getName();
+    public static final String NAME = GetStatisticsJob.class.getSimpleName();
     public static final String GROUP = NAME + "Group";
 
     @Override
@@ -26,7 +26,7 @@ public class GetStatisticsJob implements Job {
         MainController mainController = (MainController) jobDataMap.get(MainController.class.getSimpleName());
         LocalDateTime fromDate = LocalDateTime.now().minusDays(5);
 
-        List<ActiveSupportDetails> failedTries = new StatisticService().getFailedTries(fromDate);
+        List<ActiveSupportDetails> failedTries = StatisticService.getInstance().getFailedTries(fromDate);
         mainController.updateTables(failedTries);
     }
 }

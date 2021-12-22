@@ -1,6 +1,6 @@
 package pg.gipter.monitor.services;
 
-import lombok.Setter;
+import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
@@ -12,41 +12,52 @@ import java.text.ParseException;
 import static org.quartz.TriggerBuilder.newTrigger;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class JobService {
-
 
     final static TriggerKey TRIGGER_KEY = new TriggerKey("get-exceptions", "get-exceptions");
     private final JobKey jobKey = new JobKey(GetStatisticsJob.NAME, GetStatisticsJob.GROUP);
     private Trigger trigger;
 
     private Scheduler scheduler;
-    private final MainController mainController;
+    private MainController mainController;
     @Setter
     private Crons crons;
 
-    public JobService(MainController mainController) {
-        this.mainController = mainController;
+    private static class InstanceHolder {
+        static final JobService INSTANCE_HOLDER = new JobService();
     }
 
-    public void scheduleJob() throws SchedulerException {
-        if (!isSchedulerInitiated()) {
-            scheduler = StdSchedulerFactory.getDefaultScheduler();
-            log.info("Default scheduler created.");
+    public static JobService getInstance(final MainController mainController) {
+        if (InstanceHolder.INSTANCE_HOLDER.mainController == null) {
+            InstanceHolder.INSTANCE_HOLDER.mainController = mainController;
         }
+        return InstanceHolder.INSTANCE_HOLDER;
+    }
+
+    public void scheduleJob() {
         try {
-
-            if (scheduler.checkExists(getJobKey())) {
-                log.info("Job with key [{}] already exists. No need to schedule it again.", getJobKey());
-            } else {
-                createTrigger();
-                scheduler.scheduleJob(create(), getTrigger());
-                log.info("New job scheduled with the following frequency [{}].", crons.name());
+            if (!isSchedulerInitiated()) {
+                scheduler = StdSchedulerFactory.getDefaultScheduler();
+                log.info("Default scheduler created.");
             }
+            try {
 
-        } catch (ParseException | SchedulerException ex) {
-            log.error("Can not schedule job.", ex);
+                if (scheduler.checkExists(getJobKey())) {
+                    log.info("Job with key [{}] already exists. No need to schedule it again.", getJobKey());
+                } else {
+                    createTrigger();
+                    scheduler.scheduleJob(create(), getTrigger());
+                    log.info("New job scheduled with the following frequency [{}].", crons.name());
+                }
+
+            } catch (ParseException | SchedulerException ex) {
+                log.error("Can not schedule job.", ex);
+            }
+            scheduler.start();
+        } catch (SchedulerException ex) {
+            log.error("Can not schedule a new job.", ex);
         }
-        scheduler.start();
     }
 
     private JobDetail create() {
@@ -68,9 +79,13 @@ public class JobService {
                 .build();
     }
 
-    public void deleteJob() throws SchedulerException {
-        scheduler.deleteJob(jobKey);
-        log.info("{} job deleted.", jobKey.getName());
+    public void deleteJob() {
+        try {
+            scheduler.deleteJob(jobKey);
+            log.info("{} job deleted.", jobKey.getName());
+        } catch (SchedulerException ex) {
+            log.error("Can not delete job.", ex);
+        }
     }
 
     private Trigger getTrigger() {
