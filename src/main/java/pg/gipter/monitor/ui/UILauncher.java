@@ -18,7 +18,6 @@ import pg.gipter.monitor.utils.StringUtils;
 import java.awt.*;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /** Created by Gawa 2017-10-04 */
 public class UILauncher implements Launcher {
@@ -160,7 +159,4 @@ public class UILauncher implements Launcher {
         trayHandler.displayMessage(message);
     }
 
-    public void updateTables(List<ActiveSupportDetails> failedTries) {
-
-    }
 }

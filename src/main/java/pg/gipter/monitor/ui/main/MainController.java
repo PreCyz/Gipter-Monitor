@@ -86,7 +86,7 @@ public class MainController extends AbstractController {
     private SimpleStringProperty importantStringProperty;
     private SimpleStringProperty totalStringProperty;
 
-    private List<ActiveSupportDetails> failedTries;
+    private static List<ActiveSupportDetails> failedTries;
 
     private enum Summary {
         TOTAL("Total: "),
@@ -138,6 +138,9 @@ public class MainController extends AbstractController {
         runSchedulerCheckBox.setSelected(jobService.isJobExists());
         cronComboBox.setItems(FXCollections.observableList(Arrays.asList(Crons.values())));
         cronComboBox.setValue(Crons.values()[0]);
+        if (failedTries != null && !failedTries.isEmpty()) {
+            groupByFilters(failedTries);
+        }
     }
 
     private ChangeListener<ActiveSupportDetails> getSelectedValueChangeListener() {
@@ -486,7 +489,7 @@ public class MainController extends AbstractController {
     }
 
     public void updateTables(List<ActiveSupportDetails> newData) {
-        failedTries = newData;
+        failedTries = new ArrayList<>(newData);
         Platform.runLater(() -> {
             groupByFilters(failedTries);
             uiLauncher.displayNotificationMessage(String.format("%d new exceptions downloaded.", failedTries.size()));
