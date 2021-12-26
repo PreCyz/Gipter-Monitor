@@ -88,19 +88,25 @@ public class MainController extends AbstractController {
     private static List<ActiveSupportDetails> failedTries;
 
     private enum Summary {
-        TOTAL("Total: "),
-        DIFF_COULD_NOT_PRODUCE("Diff could not be produced: "),
-        IMPORTANT("Important: "),
-        UNAUTHORIZED("Unauthorized: ");
+        TOTAL("Total: ", -1),
+        DIFF_COULD_NOT_PRODUCE("Diff could not be produced: ", 0),
+        UNAUTHORIZED("Unauthorized: ", 1),
+        IMPORTANT("Important: ", 2);
 
         private final String text;
+        private final int index;
 
-        Summary(String text) {
+        Summary(String text, int index) {
             this.text = text;
+            this.index = index;
         }
 
         String text() {
             return text;
+        }
+
+        int index() {
+            return index;
         }
     }
 
@@ -174,6 +180,22 @@ public class MainController extends AbstractController {
         unauthorizedStringProperty.set(summaryMap.get(Summary.UNAUTHORIZED) + unauthorized.size());
         importantStringProperty.set(summaryMap.get(Summary.IMPORTANT) + important.size());
         totalStringProperty.set(summaryMap.get(Summary.TOTAL) + total.size());
+
+        mainTabPane.getSelectionModel().select(getTabIndexToSelect());
+    }
+
+    private int getTabIndexToSelect() {
+        Map<Summary, Integer> sizeMap = new HashMap<>();
+        sizeMap.put(Summary.DIFF_COULD_NOT_PRODUCE, diffTableView.getItems().size());
+        sizeMap.put(Summary.IMPORTANT, importantTableView.getItems().size());
+        sizeMap.put(Summary.UNAUTHORIZED, unauthorizedTableView.getItems().size());
+
+        Summary summary = sizeMap.entrySet()
+                .stream()
+                .max(Map.Entry.comparingByValue()).map(Map.Entry::getKey)
+                .orElseGet(() -> Summary.DIFF_COULD_NOT_PRODUCE);
+
+        return summary.index();
     }
 
     private Predicate<ActiveSupportDetails> getFilterPredicate(final Filter filter) {
