@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.scene.input.KeyCode;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Callback;
@@ -346,8 +347,11 @@ public class MainController extends AbstractController {
         fromDatePicker.setValue(LocalDate.now().minusMonths(1));
         getStatisticsButton.setOnAction(getStatisticsEventHandler());
         diffTableView.setRowFactory(getTableViewTableRowCallback());
+        setTableKeyShortcuts(diffTableView);
         importantTableView.setRowFactory(getTableViewTableRowCallback());
+        setTableKeyShortcuts(importantTableView);
         unauthorizedTableView.setRowFactory(getTableViewTableRowCallback());
+        setTableKeyShortcuts(unauthorizedTableView);
         diffLabel.textProperty().bindBidirectional(diffStringProperty);
         diffLabel.setOnMouseClicked(getLabelOnClickAction(0));
         unauthorizedLabel.textProperty().bindBidirectional(unauthorizedStringProperty);
@@ -400,14 +404,29 @@ public class MainController extends AbstractController {
             TableRow<ActiveSupportDetails> row = new TableRow<>();
             row.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2 && !row.isEmpty()) {
-                    selectedValue.setValue(row.getItem());
-                    uiLauncher.openDetailsWindow();
+                    openDetailsWindow(row.getItem());
                 } else if (event.getClickCount() == 1) {
                     processButton.setDisable(false);
                 }
             });
             return row;
         };
+    }
+
+    private void openDetailsWindow(ActiveSupportDetails value) {
+        selectedValue.setValue(value);
+        uiLauncher.openDetailsWindow();
+    }
+
+    private void setTableKeyShortcuts(TableView<ActiveSupportDetails> tableView) {
+        tableView.setOnKeyReleased(event -> {
+            if (event.getCode() == KeyCode.ENTER) {
+                ObservableList<ActiveSupportDetails> selectedItems = tableView.getSelectionModel().getSelectedItems();
+                if (selectedItems.size() == 1) {
+                    openDetailsWindow(selectedItems.get(0));
+                }
+            }
+        });
     }
 
     private EventHandler<MouseEvent> getLabelOnClickAction(final int tabIndex) {
