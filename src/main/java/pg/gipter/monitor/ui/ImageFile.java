@@ -4,9 +4,7 @@ import java.util.*;
 
 public enum ImageFile {
 
-    CHICKEN_FACE_PNG("png/chicken-face.png"),
-    MINION_TRAY("png/minion.png")
-    ;
+    MINION_TRAY("png/minion.png");
 
     private final String fileName;
 
@@ -26,19 +24,19 @@ public enum ImageFile {
 
     public static ImageFile randomPartialSuccessImage() {
         return randomImage(EnumSet.of(
-                CHICKEN_FACE_PNG
+                MINION_TRAY
         ));
     }
 
     public static ImageFile randomSuccessImage() {
         return randomImage(EnumSet.of(
-                CHICKEN_FACE_PNG
+                MINION_TRAY
         ));
     }
 
     public static ImageFile randomFailImage() {
         return randomImage(EnumSet.of(
-                CHICKEN_FACE_PNG
+                MINION_TRAY
         ));
     }
 }

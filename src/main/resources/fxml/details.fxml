@@ -112,7 +112,7 @@
          </padding>
       </Label>
       <Separator layoutY="441.0" prefWidth="850.0" />
-      <CheckBox fx:id="processedCheckBox" layoutX="748.0" layoutY="515.0" mnemonicParsing="false" text="Processed">
+      <CheckBox fx:id="processedCheckBox" layoutX="748.0" layoutY="515.0" mnemonicParsing="false" stylesheets="@../css/check-box.css" text="Processed">
          <font>
             <Font size="14.0" />
          </font>
@@ -126,12 +126,12 @@
          </padding>
       </Label>
       <TextArea fx:id="commentTextArea" layoutX="14.0" layoutY="454.0" prefHeight="128.0" prefWidth="493.0" wrapText="true" />
-      <Button fx:id="saveButton" layoutX="680.0" layoutY="510.0" mnemonicParsing="false" text="Save" textFill="#001eff">
+      <Button fx:id="saveButton" layoutX="680.0" layoutY="510.0" mnemonicParsing="false" styleClass="blue" stylesheets="@../css/buttons.css" text="Save" textFill="#001eff">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <Button fx:id="cancelButton" layoutX="531.0" layoutY="510.0" mnemonicParsing="false" text="Cancel" textFill="#ff5600">
+      <Button fx:id="cancelButton" layoutX="531.0" layoutY="510.0" mnemonicParsing="false" styleClass="red" stylesheets="@../css/buttons.css" text="Cancel" textFill="#ff5600">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -152,7 +152,7 @@
             <Insets top="10.0" />
          </padding>
       </Label>
-      <Button fx:id="emailButton" layoutX="610.0" layoutY="510.0" mnemonicParsing="false" text="Email" textFill="#13dd13">
+      <Button fx:id="emailButton" layoutX="610.0" layoutY="510.0" mnemonicParsing="false" styleClass="green" stylesheets="@../css/buttons.css" text="Email" textFill="#13dd13">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>

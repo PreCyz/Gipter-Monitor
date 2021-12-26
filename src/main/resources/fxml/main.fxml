@@ -6,17 +6,17 @@
 <?import javafx.scene.text.*?>
 <AnchorPane prefHeight="795.0" prefWidth="1322.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <DatePicker fx:id="fromDatePicker" layoutX="14.0" layoutY="25.0" promptText="Date from" />
-      <Button fx:id="getStatisticsButton" layoutX="211.0" layoutY="23.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" text="%main.get" textFill="#0004ff">
+      <DatePicker fx:id="fromDatePicker" layoutX="14.0" layoutY="25.0" promptText="Date from" stylesheets="@../css/date-picker.css" />
+      <Button fx:id="getStatisticsButton" layoutX="211.0" layoutY="23.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="80.0" styleClass="blue" stylesheets="@../css/buttons.css" text="%main.get" textFill="#0004ff">
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Button>
-      <Button fx:id="processButton" layoutX="306.0" layoutY="23.0" mnemonicParsing="false" text="%main.process" textFill="#ff6404">
+      <Button fx:id="processButton" layoutX="306.0" layoutY="23.0" mnemonicParsing="false" styleClass="green" stylesheets="@../css/buttons.css" text="%main.process" textFill="#ff6404">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
       </Button>
-      <TabPane fx:id="mainTabPane" layoutY="66.0" prefHeight="535.0" prefWidth="1322.0" tabClosingPolicy="UNAVAILABLE">
+      <TabPane fx:id="mainTabPane" layoutY="66.0" prefHeight="535.0" prefWidth="1322.0" stylesheets="@../css/tab-pane.css" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab text="%main.tab.couldNotBeProduced">
             <content>
@@ -136,7 +136,7 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </TitledPane>
-      <Button fx:id="exitButton" layoutX="1238.0" layoutY="751.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" text="%main.exit" textFill="#ff6404">
+      <Button fx:id="exitButton" layoutX="1238.0" layoutY="751.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="70.0" styleClass="red" stylesheets="@../css/buttons.css" text="%main.exit" textFill="#ff6404">
          <font>
             <Font name="System Bold" size="14.0" />
          </font>
@@ -146,9 +146,9 @@
         <content>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="176.0" prefWidth="200.0">
                <children>
-                  <CheckBox fx:id="autostartCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="%main.autostart" />
-                  <CheckBox fx:id="runSchedulerCheckBox" layoutX="14.0" layoutY="48.0" mnemonicParsing="false" text="%main.runScheduler" />
-                  <ComboBox fx:id="cronComboBox" layoutX="14.0" layoutY="82.0" prefHeight="27.0" prefWidth="174.0" />
+                  <CheckBox fx:id="autostartCheckBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" stylesheets="@../css/check-box.css" text="%main.autostart" />
+                  <CheckBox fx:id="runSchedulerCheckBox" layoutX="14.0" layoutY="48.0" mnemonicParsing="false" stylesheets="@../css/check-box.css" text="%main.runScheduler" />
+                  <ComboBox fx:id="cronComboBox" layoutX="14.0" layoutY="82.0" prefHeight="27.0" prefWidth="174.0" stylesheets="@../css/combo-box.css" />
                </children>
             </AnchorPane>
         </content>
